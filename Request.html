@@ -121,6 +121,7 @@ header{
   margin:0 20px 20px;padding:10px 14px;
   border-radius:12px;font-size:12px;font-weight:500;line-height:1.5;
   animation:fadeUp 0.5s 0.2s both;transition:all 0.35s;
+  display: none; /* Hidden initially until a mode is selected */
 }
 .warn-pill.emrg-warn{background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.2);color:var(--red2)}
 .warn-pill.norm-warn{background:var(--blue-bg);border:1px solid var(--blue-bdr);color:var(--blue)}
@@ -138,7 +139,7 @@ header{
 .sh-badge.emrg{background:rgba(192,57,43,0.1);color:var(--red2);border:1px solid rgba(192,57,43,0.2)}
 .sh-badge.norm{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bdr)}
 
-.content-area{padding-bottom:32px;position:relative;z-index:1}
+.content-area{padding-bottom:120px;position:relative;z-index:1}
 
 .donor-card{
   background:var(--sur);border:1px solid var(--bdr);border-radius:20px;
@@ -315,6 +316,153 @@ header{
 .panel{display:none}.panel.active{display:block}
 .panel-enter{animation:panelIn 0.42s cubic-bezier(0.22,1,0.36,1) both}
 @keyframes panelIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* Bottom Navigation Bar */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 430px;
+  background: var(--sur);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px 24px;
+  border-radius: 24px 24px 0 0;
+  filter: drop-shadow(0 -4px 16px rgba(0,0,0,0.06));
+  z-index: 100;
+  transition: background 0.45s;
+  left: 50%;
+  transform: translateX(-50%);
+}
+[data-theme="dark"] .bottom-nav {
+  filter: drop-shadow(0 -4px 16px rgba(0,0,0,0.4));
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--txt3);
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  transition: color 0.3s;
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+.nav-item.active, .nav-item:hover {
+  color: var(--red);
+}
+.nav-item svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s;
+}
+.nav-item.active svg {
+  transform: scale(1.1);
+}
+.nav-fab-wrapper {
+  position: relative;
+  width: 76px;
+  display: flex;
+  justify-content: center;
+}
+.nav-fab-bg {
+  position: absolute;
+  top: -36px;
+  width: 72px;
+  height: 72px;
+  background: var(--sur);
+  border-radius: 50%;
+  z-index: 1;
+  transition: background 0.45s;
+}
+.nav-fab {
+  position: absolute;
+  top: -28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), var(--red3));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6px 16px rgba(192,57,43,0.4);
+  cursor: pointer;
+  transition: transform 0.25s, box-shadow 0.25s;
+  color: white;
+  z-index: 2;
+  border: none;
+  outline: none;
+}
+.nav-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(192,57,43,0.5);
+}
+.nav-fab:active {
+  transform: scale(0.95);
+}
+.nav-fab svg {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Booking Modal */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  z-index: 1000; display: flex; justify-content: center; align-items: flex-end;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--sur); width: 100%; max-width: 430px; border-radius: 24px 24px 0 0;
+  padding: 24px 20px 32px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+  max-height: 85vh; overflow-y: auto; border-top: 1px solid var(--bdr); box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+}
+.modal-overlay.show .modal { transform: translateY(0); }
+.modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.modal-title { font-size: 18px; font-weight: 700; color: var(--txt); font-family: 'Playfair Display', serif; line-height: 1.3; padding-right: 15px; }
+.modal-close { background: var(--bg2); border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 14px; color: var(--txt2); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s; }
+.modal-close:active { transform: scale(0.9); }
+.form-group { margin-bottom: 14px; }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+.form-label { display: block; font-size: 11px; font-weight: 700; color: var(--txt2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-input, .form-select { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--bdr); background: var(--bg); color: var(--txt); font-family: 'DM Sans', sans-serif; font-size: 14px; transition: border-color 0.3s, background 0.3s; }
+.form-input:focus, .form-select:focus { outline: none; border-color: var(--blue2); background: var(--sur); }
+[data-theme="dark"] .form-input, [data-theme="dark"] .form-select { background: var(--bg2); color: var(--txt); }
+[data-theme="dark"] .form-input:focus, [data-theme="dark"] .form-select:focus { background: var(--sur); }
+.btn-primary { width: 100%; background: linear-gradient(135deg, var(--blue), var(--blue2)); color: white; padding: 14px; border-radius: 14px; font-weight: 700; border: none; font-size: 15px; cursor: pointer; box-shadow: 0 4px 14px var(--blue-bdr); margin-top: 8px; transition: transform 0.2s, opacity 0.2s; font-family: 'DM Sans', sans-serif; }
+.btn-primary:active { transform: scale(0.96); }
+.modal-call-wrap { display: flex; justify-content: center; margin-top: 16px; }
+
+/* File Upload Styles */
+.file-drop-area {
+  border: 2px dashed var(--bdr); border-radius: 12px; padding: 16px;
+  text-align: center; position: relative; cursor: pointer;
+  background: var(--bg); transition: border-color 0.3s, background 0.3s;
+}
+.file-drop-area:hover, .file-drop-area:focus-within { border-color: var(--blue2); background: var(--sur); }
+[data-theme="dark"] .file-drop-area { background: var(--bg2); }
+[data-theme="dark"] .file-drop-area:hover, [data-theme="dark"] .file-drop-area:focus-within { background: var(--sur); }
+.file-ico { font-size: 20px; display: block; margin-bottom: 4px; }
+.file-msg { font-size: 11px; color: var(--txt2); font-weight: 600; }
+.file-input { position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+.success-icon { font-size: 56px; margin-bottom: 12px; animation: popIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+.success-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--txt); margin-bottom: 8px; }
+.success-text { font-size: 13px; color: var(--txt2); line-height: 1.5; margin-bottom: 24px; padding: 0 10px; }
 </style>
 </head>
 <body>
@@ -351,14 +499,127 @@ header{
 <div class="warn-pill" id="warnPill"></div>
 
 <div id="panelEmrg" class="panel">
-  <div class="section-head">
-    <div class="sh-left">
-      <h3>Volunteer Donors</h3>
-      <p>10 contacts available now</p>
+  <div id="emrgFormView">
+    <div class="section-head">
+      <div class="sh-left">
+        <h3>Emergency Requisition</h3>
+        <p>Submit details to find matching live donors</p>
+      </div>
+      <span class="sh-badge emrg">🚨 URGENT</span>
     </div>
-    <span class="sh-badge emrg">🔴 LIVE</span>
+    <div class="content-area" style="padding: 0 20px 120px;">
+      <form id="emrgForm" onsubmit="submitEmergencyRequest(event)">
+        <div class="form-group">
+          <label class="form-label">Patient Name</label>
+          <input type="text" class="form-input" required placeholder="Enter patient's full name">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Age</label>
+            <input type="number" class="form-input" required min="0" max="150" placeholder="Years">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Blood Group</label>
+            <select class="form-select" id="emrgBloodGroup" required>
+              <option value="" disabled selected>Select</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option>
+              <option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Units Needed</label>
+            <input type="number" class="form-input" required min="1" max="10" value="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hospital Name & Ward</label>
+          <input type="text" class="form-input" required placeholder="e.g. AMRI Hospital, Ward 3">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Purpose</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>Surgery</option>
+              <option>Accident / Trauma</option>
+              <option>Thalassemia / Leukemia</option>
+              <option>Pregnancy / Delivery</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date Required</label>
+            <input type="date" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" required placeholder="For status updates">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Attendant Contact</label>
+          <input type="tel" class="form-input" required placeholder="10-digit mobile number">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Medical Report / Requisition</label>
+          <div class="file-drop-area">
+            <span class="file-ico">📄</span>
+            <span class="file-msg" id="emrgFileMsgTxt">Tap to upload doctor's prescription</span>
+            <input type="file" class="file-input" accept=".pdf,image/*" onchange="updateFileName(this, 'emrgFileMsgTxt')">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-primary" id="emrgSubmitBtn" style="background:linear-gradient(135deg, var(--red), var(--red3)); box-shadow:0 4px 14px rgba(192,57,43,0.3);">Find Donors Now</button>
+      </form>
+    </div>
   </div>
-  <div class="content-area" id="donorList"></div>
+
+  <div id="emrgListView" style="display:none;">
+    <div class="loc-bar">
+      <div class="loc-wrap">
+        <span class="loc-ico">🩸</span>
+        <select class="loc-inp" id="bloodFilterInp" onchange="filterDonors()" style="cursor: pointer;">
+          <option value="all">All Blood Groups</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+        </select>
+      </div>
+    </div>
+    <div class="section-head">
+      <div class="sh-left">
+        <h3>Volunteer Donors</h3>
+        <p id="donorCount">10 contacts available now</p>
+      </div>
+      <span class="sh-badge emrg">🔴 LIVE</span>
+    </div>
+    <div class="content-area" id="donorList"></div>
+  </div>
 </div>
 
 <div id="panelNorm" class="panel">
@@ -377,6 +638,139 @@ header{
     <span class="sh-badge norm">🏥 Normal</span>
   </div>
   <div class="content-area" id="bankList"></div>
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <a href="#" class="nav-item active">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    <span>Home</span>
+  </a>
+  <a href="#" class="nav-item">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    <span>Events</span>
+  </a>
+  <div class="nav-fab-wrapper">
+    <div class="nav-fab-bg"></div>
+    <button class="nav-fab" onclick="setMode('emergency')">
+      <svg viewBox="0 0 24 24"><path d="M12 21a7.5 7.5 0 0 1-7.5-7.5c0-4.14 7.5-11.5 7.5-11.5s7.5 7.36 7.5 11.5A7.5 7.5 0 0 1 12 21z"></path></svg>
+    </button>
+  </div>
+  <a href="#" class="nav-item">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+    <span>About</span>
+  </a>
+  <a href="#" class="nav-item">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    <span>Profile</span>
+  </a>
+</nav>
+
+<!-- Booking Modal Overlay -->
+<div class="modal-overlay" id="bookingModalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalBankName">Blood Bank Name</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    
+    <div id="bookingFormContainer">
+      <form id="bookingForm" onsubmit="submitRequest(event)">
+        <div class="form-group">
+          <label class="form-label">Patient Name</label>
+          <input type="text" class="form-input" required placeholder="Enter patient's full name">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Age</label>
+            <input type="number" class="form-input" required min="0" max="150" placeholder="Years">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Blood Group</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option>
+              <option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Units Needed</label>
+            <input type="number" class="form-input" required min="1" max="10" value="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hospital Name & Ward</label>
+          <input type="text" class="form-input" required placeholder="e.g. AMRI Hospital, Ward 3">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Purpose</label>
+            <select class="form-select" required>
+              <option value="" disabled selected>Select</option>
+              <option>Surgery</option>
+              <option>Accident / Trauma</option>
+              <option>Thalassemia / Leukemia</option>
+              <option>Pregnancy / Delivery</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date Required</label>
+            <input type="date" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" required placeholder="For status updates">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Attendant Contact</label>
+          <input type="tel" class="form-input" required placeholder="10-digit mobile number">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Medical Report / Requisition</label>
+          <div class="file-drop-area">
+            <span class="file-ico">📄</span>
+            <span class="file-msg" id="fileMsgTxt">Tap to upload doctor's prescription</span>
+            <input type="file" class="file-input" accept=".pdf,image/*" onchange="updateFileName(this, 'fileMsgTxt')">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-primary">Submit Request</button>
+        
+        <div class="modal-call-wrap">
+          <button type="button" class="bank-call-btn" id="modalCallBtn"><span class="ph-ico">📞</span> Call Directly</button>
+        </div>
+      </form>
+    </div>
+    
+    <div id="bookingSuccessContainer" style="display:none; text-align:center; padding: 10px 0;">
+      <div class="success-icon">⏳</div>
+      <div class="success-title">Request Pending</div>
+      <div class="success-text">Your blood request has been successfully sent. Please wait while the hospital reviews and approves it.</div>
+      <button type="button" class="btn-primary" onclick="closeModal()">Back to Dashboard</button>
+    </div>
+  </div>
 </div>
 
 </div>
@@ -411,6 +805,7 @@ var banks=[
 ];
 
 var currentMode='';
+var isEmrgSubmitted = false;
 
 function ini(n){return n.substring(0,2).toUpperCase()}
 
@@ -422,15 +817,26 @@ function setMode(mode){
   var pN=document.getElementById('panelNorm');
   var warn=document.getElementById('warnPill');
 
-  tabE.className='mode-tab';tabN.className='mode-tab';
-  pE.className='panel';pN.className='panel';
+  // Reset classes and show warning block
+  tabE.className='mode-tab';
+  tabN.className='mode-tab';
+  pE.className='panel';
+  pN.className='panel';
+  warn.style.display = 'block'; // Make warning pill visible only upon user selection
 
   if(mode==='emergency'){
     tabE.classList.add('active-emrg');
     pE.classList.add('active','panel-enter');
     warn.className='warn-pill emrg-warn';
     warn.innerHTML='⚠️ Emergency mode directly contacts registered volunteer donors. Please use only for genuine medical emergencies.';
-    renderDonors();
+    
+    if(!isEmrgSubmitted) {
+      document.getElementById('emrgFormView').style.display = 'block';
+      document.getElementById('emrgListView').style.display = 'none';
+    } else {
+      document.getElementById('emrgFormView').style.display = 'none';
+      document.getElementById('emrgListView').style.display = 'block';
+    }
   } else {
     tabN.classList.add('active-norm');
     pN.classList.add('active','panel-enter');
@@ -440,8 +846,16 @@ function setMode(mode){
   }
 }
 
-function renderDonors(){
-  var html=donors.map(function(d,i){
+function renderDonors(list){
+  list = list || donors;
+  document.getElementById('donorCount').textContent = list.length + ' contact' + (list.length !== 1 ? 's' : '') + ' available now';
+  
+  if(!list.length){
+    document.getElementById('donorList').innerHTML='<div class="no-result"><span class="no-ico">🩸</span><div class="no-t">No donors found</div><div class="no-s">No active donors for this blood group</div></div>';
+    return;
+  }
+
+  var html=list.map(function(d,i){
     return '<div class="donor-card" style="animation-delay:'+(i*0.055+0.02)+'s">'+
       '<div class="dc-top">'+
       '<div class="av-wrap">'+
@@ -472,6 +886,18 @@ function renderDonors(){
   document.getElementById('donorList').innerHTML=html;
 }
 
+function filterDonors() {
+  var bg = document.getElementById('bloodFilterInp').value;
+  if (bg === 'all') {
+    renderDonors(donors);
+  } else {
+    var filtered = donors.filter(function(d) {
+      return d.blood === bg;
+    });
+    renderDonors(filtered);
+  }
+}
+
 function renderBanks(list){
   document.getElementById('bankCount').textContent=list.length+' bank'+(list.length!==1?'s':'')+' found in Kolkata';
   if(!list.length){
@@ -479,7 +905,7 @@ function renderBanks(list){
     return;
   }
   document.getElementById('bankList').innerHTML=list.map(function(b,i){
-    return '<div class="bank-card" style="animation-delay:'+(i*0.055+0.02)+'s">'+
+    return '<div class="bank-card" style="animation-delay:'+(i*0.055+0.02)+'s" onclick="openBookingModal(\''+b.name.replace(/'/g, "\\'")+'\', \''+b.phone+'\')">'+
       '<div class="bc-top">'+
         '<div class="bc-icon">🏥</div>'+
         '<div class="bc-info">'+
@@ -526,7 +952,111 @@ function toggleTheme(){
   document.getElementById('togLbl').textContent=isLight?'🌙 Night':'☀ Day';
 }
 
-setMode('emergency');
+// Modal Functions
+function openBookingModal(bankName, bankPhone) {
+  document.getElementById('modalBankName').textContent = bankName;
+  
+  // Set up the specific call button for this modal instance
+  document.getElementById('modalCallBtn').onclick = function(e) {
+    callPerson(e, bankPhone, bankName, 'norm');
+  };
+  
+  // Reset UI states
+  document.getElementById('bookingFormContainer').style.display = 'block';
+  document.getElementById('bookingSuccessContainer').style.display = 'none';
+  document.getElementById('bookingForm').reset();
+  
+  // Show modal
+  document.getElementById('bookingModalOverlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('bookingModalOverlay').classList.remove('show');
+}
+
+function updateFileName(input, msgId) {
+  var msgElement = document.getElementById(msgId);
+  if (input.files && input.files.length > 0) {
+    var fileName = input.files[0].name;
+    // Truncate long file names
+    if (fileName.length > 25) {
+      fileName = fileName.substring(0, 12) + "..." + fileName.substring(fileName.length - 10);
+    }
+    msgElement.textContent = fileName;
+    msgElement.style.color = 'var(--blue2)';
+  } else {
+    msgElement.textContent = "Tap to upload doctor's prescription";
+    msgElement.style.color = 'var(--txt2)';
+  }
+}
+
+function submitEmergencyRequest(e) {
+  e.preventDefault();
+  
+  var btn = document.getElementById('emrgSubmitBtn');
+  var originalText = btn.textContent;
+  
+  btn.textContent = 'Matching...';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
+  
+  var requestedBg = document.getElementById('emrgBloodGroup').value;
+
+  setTimeout(function() {
+    btn.textContent = originalText;
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+    
+    isEmrgSubmitted = true;
+    
+    document.getElementById('emrgFormView').style.display = 'none';
+    document.getElementById('emrgListView').style.display = 'block';
+    
+    // Automatically match the filter to the requested blood group
+    if (requestedBg) {
+      document.getElementById('bloodFilterInp').value = requestedBg;
+      filterDonors();
+    } else {
+      document.getElementById('bloodFilterInp').value = 'all';
+      renderDonors(donors);
+    }
+    
+    // Show success match toast
+    var t=document.getElementById('toast');
+    t.className='toast emrg-toast';
+    t.textContent='✅ Matched with live donors!';
+    t.classList.add('show');
+    clearTimeout(window._tt);
+    window._tt=setTimeout(function(){t.classList.remove('show')},2400);
+
+  }, 1200);
+}
+
+function submitRequest(e) {
+  e.preventDefault();
+  
+  var btn = e.target.querySelector('button[type="submit"]');
+  var originalText = btn.textContent;
+  
+  // Show loading state
+  btn.textContent = 'Submitting...';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
+  
+  // Simulate network request delay
+  setTimeout(function() {
+    // Revert button state
+    btn.textContent = originalText;
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+    
+    // Switch views
+    document.getElementById('bookingFormContainer').style.display = 'none';
+    document.getElementById('bookingSuccessContainer').style.display = 'block';
+  }, 1200);
+}
+
+// Notice we removed setMode('emergency'); from here so it starts empty.
 </script>
 </body>
 </html>
