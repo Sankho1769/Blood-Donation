@@ -1,866 +1,566 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RaktaMitra</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-body { font-family: 'Inter', sans-serif; }
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-.hide-scrollbar::-webkit-scrollbar { display: none; }
-.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RaktaMitra - Cinematic Medical Animation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --royal-blue: #0055ff;
+            --royal-light: #80aaff;
+            --neon-white: #ffffff;
+            --dark-bg: #00020a;
+            --black: #000000;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--black);
+            overflow: hidden;
+            font-family: 'Montserrat', sans-serif;
+            touch-action: none;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: radial-gradient(circle at center, #050814 0%, var(--black) 100%);
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .top-section {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .bottom-section {
+            position: absolute;
+            top: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .icon-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .drop-icon, .cross-icon {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            fill: transparent;
+            stroke-width: 2;
+            opacity: 0;
+            transform: scale(0) rotate(0deg);
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .drop-icon {
+            stroke: var(--royal-blue);
+            filter: drop-shadow(0 0 5px var(--royal-blue));
+        }
+        
+        .cross-icon {
+            stroke: var(--neon-white);
+            filter: drop-shadow(0 0 5px var(--neon-white));
+            animation: heartbeat 1.5s infinite ease-in-out;
+        }
+
+        .brand-text {
+            position: relative;
+            z-index: 101;
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-align: center;
+            background: linear-gradient(to right, #ffffff 0%, var(--royal-light) 50%, var(--royal-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+        }
+
+        .subtitle {
+            position: relative;
+            z-index: 101;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 6px;
+            color: #ffffff;
+            text-align: center;
+            line-height: 1.6;
+            text-transform: uppercase;
+            text-shadow: none;
+            opacity: 0;
+            transform: scale(0.8) translateY(10px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+        }
+
+        .ui-state-reveal .drop-icon {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+            fill: rgba(0, 85, 255, 0.1);
+        }
+        .ui-state-reveal .brand-text, .ui-state-reveal .subtitle {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .ui-state-morph1 .drop-icon {
+            opacity: 0;
+            transform: scale(0.2) rotate(180deg);
+        }
+        .ui-state-morph1 .cross-icon {
+            opacity: 1;
+            transform: scale(1) rotate(360deg);
+            fill: rgba(255, 255, 255, 0.1);
+        }
+        .ui-state-morph1 .brand-text, .ui-state-morph1 .subtitle {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .ui-state-close .drop-icon, .ui-state-close .cross-icon {
+            opacity: 0;
+            transform: scale(0.2) rotate(-90deg);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ui-state-close .brand-text, .ui-state-close .subtitle {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        /* 4. WELCOME STATE (Show branding and button) */
+        .ui-state-welcome .brand-text, .ui-state-welcome .subtitle {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+        .ui-state-welcome .welcome-btn {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+        .ui-state-welcome .drop-icon, .ui-state-welcome .cross-icon {
+            opacity: 0;
+            transform: scale(0.2) rotate(-90deg);
+        }
+
+        .welcome-btn {
+            padding: 14px 45px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--neon-white);
+            background: rgba(0, 85, 255, 0.1);
+            border: 2px solid var(--royal-blue);
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: 0 0 15px rgba(0, 85, 255, 0.4), inset 0 0 10px rgba(0, 85, 255, 0.2);
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .welcome-btn:hover {
+            background: var(--royal-blue);
+            box-shadow: 0 0 25px rgba(0, 85, 255, 0.8), inset 0 0 15px rgba(0, 85, 255, 0.4);
+            transform: scale(1.05) translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); filter: drop-shadow(0 0 5px var(--neon-white)); }
+            10% { transform: scale(1.1); filter: drop-shadow(0 0 15px var(--neon-white)); }
+            20% { transform: scale(1); filter: drop-shadow(0 0 5px var(--neon-white)); }
+            30% { transform: scale(1.05); filter: drop-shadow(0 0 10px var(--neon-white)); }
+            40% { transform: scale(1); filter: drop-shadow(0 0 5px var(--neon-white)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--neon-white)); }
+        }
+
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 150px rgba(0, 5, 20, 0.9);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        @media (min-width: 768px) {
+            body { display: flex; justify-content: center; align-items: center; background-color: #000; }
+            #app-container {
+                position: relative; width: 400px; height: 711px;
+                border-radius: 20px; overflow: hidden; box-shadow: 0 0 50px rgba(0,85,255,0.2);
+            }
+        }
+        @media (max-width: 767px) {
+            #app-container { position: relative; width: 100%; height: 100%; }
+            .brand-text { font-size: 3rem; }
+            .subtitle { font-size: 0.8rem; letter-spacing: 4px; }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased selection:bg-red-100 selection:text-red-900 min-h-screen flex flex-col">
+<body>
 
-<header class="hidden lg:flex h-20 bg-white border-b border-slate-200 items-center px-8 shrink-0 sticky top-0 z-50">
-<a href="#" class="w-64 flex items-center gap-3 cursor-pointer">
-<svg width="24" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="#dc2626"/>
-<circle cx="12" cy="14" r="3" fill="white"/>
-</svg>
-<span class="font-bold text-2xl tracking-tight text-slate-900">RaktaMitra</span>
-</a>
-<div class="flex-1 max-w-2xl px-8">
-<div class="relative">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-<input type="text" placeholder="Search events, donors, hospitals..." class="w-full bg-slate-100 text-slate-800 placeholder-slate-400 rounded-full py-2.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:bg-white transition-colors border border-transparent focus:border-red-200">
-</div>
-</div>
-<div class="flex items-center gap-6 ml-auto">
-<div class="flex items-center gap-5 text-slate-500">
-<div class="relative cursor-pointer hover:text-slate-800 transition-colors">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-<span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">2</span>
-</div>
-<div class="relative cursor-pointer hover:text-slate-800 transition-colors" onclick="toggleNotifications()">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-<span class="notif-badge absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">3</span>
-</div>
-</div>
-<div class="h-8 w-px bg-slate-200"></div>
-<div class="flex items-center gap-3 cursor-pointer group">
-<img src="https://i.pravatar.cc/150?img=11" alt="Profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-transparent group-hover:ring-red-100 transition-all">
-<span class="font-semibold text-sm text-slate-700 group-hover:text-slate-900 transition-colors">Arjun Das</span>
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400 group-hover:text-slate-600"><polyline points="6 9 12 15 18 9"></polyline></svg>
-</div>
-</div>
-</header>
-
-<header class="flex lg:hidden bg-white px-5 pt-12 pb-4 sticky top-0 z-40 border-b border-slate-100">
-<div class="flex justify-between items-center w-full">
-<div class="flex items-center gap-2">
-<svg width="20" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="#dc2626"/>
-<circle cx="12" cy="14" r="3" fill="white"/>
-</svg>
-<span class="font-bold text-xl tracking-tight">RaktaMitra</span>
-</div>
-<div class="flex items-center gap-4 text-slate-600">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-<div class="relative cursor-pointer" onclick="toggleNotifications()">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-<span class="notif-badge absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">3</span>
-</div>
-</div>
-</div>
-</header>
-
-<div class="flex max-w-[1600px] mx-auto w-full flex-1 relative">
-<aside class="w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col justify-between py-6 shrink-0 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto hide-scrollbar z-30">
-<nav class="px-4 flex flex-col gap-1.5">
-<a href="#" class="flex items-center gap-3 px-4 py-3 bg-red-600 text-white rounded-xl font-medium transition-colors shadow-[0_4px_12px_rgba(220,38,38,0.25)]">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-Home
-</a>
-<a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800 rounded-xl font-medium transition-colors">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-Events
-</a>
-<a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800 rounded-xl font-medium transition-colors">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-Find Donors
-</a>
-<a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800 rounded-xl font-medium transition-colors">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-Requests
-</a>
-<a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800 rounded-xl font-medium transition-colors">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
-Blood Banks
-</a>
-<a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800 rounded-xl font-medium transition-colors">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-Rewards
-</a>
-<a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800 rounded-xl font-medium transition-colors">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-Saved
-</a>
-<div class="mt-6 pt-6 border-t border-slate-100">
-<button class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3.5 px-4 rounded-xl font-semibold transition-colors shadow-sm">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-Emergency Request
-</button>
-</div>
-</nav>
-<div class="px-4 mt-8">
-<div class="bg-slate-50 border border-slate-100 rounded-2xl p-5 relative overflow-hidden">
-<div class="absolute right-[-10px] bottom-[-10px] opacity-10">
-<svg width="100" height="100" viewBox="0 0 24 24" fill="#dc2626" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-</div>
-<h4 class="font-bold text-slate-800 text-sm mb-4">You're a Lifesaver! 💖</h4>
-<div class="flex flex-col gap-3 relative z-10">
-<div>
-<p class="text-xs text-slate-500 font-medium">Donations</p>
-<p class="font-bold text-lg text-slate-800">12</p>
-</div>
-<div>
-<p class="text-xs text-slate-500 font-medium">Lives Impacted</p>
-<p class="font-bold text-3xl text-red-600">48</p>
-</div>
-<button class="mt-2 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 py-2 px-4 rounded-lg self-start transition-colors border border-red-100">View Impact</button>
-</div>
-</div>
-</div>
-</aside>
-
-<main class="flex-1 w-full px-5 py-6 lg:p-8 pb-32 lg:pb-8 max-w-5xl mx-auto overflow-x-hidden min-w-0">
-<div class="flex lg:hidden justify-between items-start mb-6">
-<div>
-<h1 class="text-2xl font-bold flex items-center gap-2">Hi, Nandini <span>👋</span></h1>
-<p class="text-slate-500 text-sm flex items-center gap-1 mt-1">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-Kolkata, West Bengal
-</p>
-</div>
-<img src="https://i.psravatar.cc/150?img=11" alt="Profile" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm cursor-pointer">
-</div>
-
-<div class="flex lg:hidden bg-gradient-to-br from-red-600 to-red-700 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden mb-8">
-<div class="absolute right-0 top-0 opacity-20 transform translate-x-1/4 -translate-y-1/4">
-<svg width="150" height="150" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-</div>
-<div class="relative z-10 w-full">
-<h2 class="text-xl font-bold mb-2">Need Blood Urgently?</h2>
-<p class="text-red-100 text-sm mb-6 max-w-[80%] leading-relaxed">Get help from verified donors in your area, instantly.</p>
-<div class="flex gap-3">
-<a href="Request.html" class="flex-1 bg-white text-red-600 py-3 rounded-xl font-semibold text-sm shadow-md active:scale-95 transition-transform text-center">Request Blood</a>
-<a href="donate.html" class="flex-1 bg-transparent border border-white/50 text-white py-3 rounded-xl font-semibold text-sm active:scale-95 transition-transform text-center">Donate Blood</a>
-</div>
-</div>
-<div class="absolute right-6 bottom-6 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm cursor-pointer">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-</div>
-</div>
-
-<div class="hidden lg:flex bg-[#dc2626] rounded-[32px] p-10 relative overflow-hidden items-center justify-between shadow-[0_10px_30px_-10px_rgba(220,38,38,0.5)] mb-10 min-h-[260px]">
-<div class="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent"></div>
-<div class="absolute right-0 top-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-red-500 rounded-full blur-[80px] opacity-60"></div>
-<div class="relative z-10 max-w-lg text-white">
-<h1 class="text-4xl lg:text-[40px] font-bold mb-4 leading-[1.15] tracking-tight">Together, We Can<br>Save More Lives</h1>
-<p class="text-red-100 mb-8 text-base lg:text-lg">Join events, donate blood, and make<br>a real difference.</p>
-<a href="donate.html" class="inline-flex items-center justify-center bg-white text-red-600 px-8 py-3.5 rounded-xl font-bold shadow-md hover:bg-slate-50 transition-colors active:scale-95 text-base">Donate Now</a>
-</div>
-<div class="relative z-10 hidden md:block mr-4">
-<div class="w-48 h-48 bg-white/10 backdrop-blur-lg rounded-[40px] border border-white/20 flex items-center justify-center relative shadow-xl">
-<div class="w-24 h-24 bg-red-500 rounded-3xl flex items-center justify-center shadow-[inset_0_-8px_16px_rgba(0,0,0,0.15)] relative z-10">
-<svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-</div>
-<div class="absolute -bottom-6 -left-6 w-16 h-16 bg-white/30 rounded-full blur-md"></div>
-<div class="absolute -top-4 -right-4 w-12 h-12 bg-white/20 rounded-full blur-sm"></div>
-</div>
-</div>
-</div>
-
-<div class="lg:hidden mb-8">
-<div class="flex justify-between items-center mb-4">
-<h3 class="font-bold text-lg">Quick Actions</h3>
-</div>
-<div class="grid grid-cols-4 gap-4">
-<div class="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
-<div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center text-red-500 shadow-sm border border-red-100">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-</div>
-<span class="text-[11px] font-medium text-slate-600 text-center leading-tight">Find<br>Donors</span>
-</div>
-<div class="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
-<div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 shadow-sm border border-blue-100">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
-</div>
-<span class="text-[11px] font-medium text-slate-600 text-center leading-tight">Blood<br>Banks</span>
-</div>
-<div class="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
-<div class="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-sm border border-purple-100">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-</div>
-<span class="text-[11px] font-medium text-slate-600 text-center leading-tight">Events<br>&nbsp;</span>
-</div>
-<div class="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
-<div class="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500 shadow-sm border border-orange-100">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
-</div>
-<span class="text-[11px] font-medium text-slate-600 text-center leading-tight">My<br>Requests</span>
-</div>
-</div>
-</div>
-
-<div class="mb-8 lg:mb-10">
-<div class="flex justify-between items-center mb-6">
-<h2 class="text-xl font-bold text-slate-900">Latest Events</h2>
-<a href="#" class="text-sm font-semibold text-slate-400 hover:text-red-600 transition-colors lg:hidden">View All</a>
-</div>
-<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2 mb-4 w-full">
-<button class="bg-red-600 text-white px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap shadow-sm transition-colors">All</button>
-<button class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors">Donation Camps</button>
-<button class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors">Emergency</button>
-<button class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors">Awareness</button>
-<button class="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors">NGO</button>
-</div>
-
-<div class="flex flex-col gap-4 w-full" id="events-container">
-<div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-row gap-4 lg:gap-5 hover:shadow-md transition-shadow w-full">
-<img src="https://images.unsplash.com/photo-1615461066158-61619623cb8d?q=80&w=200&auto=format&fit=crop" alt="Event" class="w-24 h-24 md:w-36 md:h-36 rounded-xl object-cover shrink-0 cursor-pointer" onclick="openJoinModal('Mega City Blood Donation Drive')">
-<div class="flex-1 flex flex-col md:flex-row md:justify-between py-1 min-w-0">
-<div class="flex flex-col justify-between flex-1 pr-0 md:pr-4">
-<div>
-<div class="flex justify-between items-start mb-1 md:mb-2">
-<span class="text-[10px] md:text-[11px] font-bold text-red-600 bg-red-50 px-2 md:px-2.5 py-1 rounded md:rounded-md uppercase tracking-wide border border-red-100 line-clamp-1">Blood Donation Camp</span>
-</div>
-<h3 class="font-bold text-slate-800 text-sm md:text-lg leading-snug cursor-pointer hover:text-red-600 transition-colors line-clamp-2 md:line-clamp-1" onclick="openJoinModal('Mega City Blood Donation Drive')">Mega City Blood Donation Drive</h3>
-<div class="flex flex-col md:flex-row md:gap-6 mt-1 md:mt-2">
-<p class="text-xs md:text-sm text-slate-500 flex items-center gap-1 md:gap-1.5 truncate">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 md:w-3.5 md:h-3.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-Eco Park, Kolkata
-</p>
-<p class="text-xs md:text-sm text-slate-500 flex items-center gap-1 md:gap-1.5 mt-0.5 md:mt-0 truncate">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 md:w-3.5 md:h-3.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-25 May 2024 • 10:00 AM
-</p>
-</div>
-</div>
-<div class="flex items-center gap-2 mt-3 md:mt-4">
-<div class="flex -space-x-2">
-<img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=1" alt="">
-<img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=2" alt="">
-<img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=3" alt="">
-</div>
-<span class="text-[10px] md:text-sm text-slate-600 font-medium">125 joined</span>
-</div>
-</div>
-<div class="mt-3 md:mt-0 flex flex-row md:flex-col justify-between items-center md:items-end md:w-40 md:border-l border-slate-100 md:pl-5 shrink-0 gap-2 md:gap-4">
-<div class="text-left md:text-right hidden md:block">
-<div class="flex items-center justify-end gap-1 text-red-600 font-bold text-xl">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-120
-</div>
-<p class="text-xs text-slate-500">Donors Needed</p>
-<p class="text-xs text-slate-400 mt-1 flex items-center justify-end gap-1">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-3.2 km Away
-</p>
-</div>
-<button onclick="openJoinModal('Mega City Blood Donation Drive')" class="w-full md:w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 md:py-2.5 rounded-lg md:rounded-xl transition-colors text-xs md:text-sm shadow-sm active:scale-95">Join Event</button>
-</div>
-</div>
-</div>
-
-<div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-row gap-4 lg:gap-5 hover:shadow-md transition-shadow relative overflow-hidden w-full">
-<div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500 hidden md:block"></div>
-<img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=200&auto=format&fit=crop" alt="Emergency" class="w-24 h-24 md:w-36 md:h-36 rounded-xl object-cover shrink-0 cursor-pointer">
-<div class="flex-1 flex flex-col md:flex-row md:justify-between py-1 min-w-0">
-<div class="flex flex-col justify-between flex-1 pr-0 md:pr-4">
-<div>
-<div class="flex justify-between items-start mb-1 md:mb-2">
-<span class="text-[10px] md:text-[11px] font-bold text-red-600 bg-red-50 px-2 md:px-2.5 py-1 rounded md:rounded-md uppercase tracking-wide border border-red-100 line-clamp-1">Emergency Request</span>
-<span class="hidden md:flex items-center gap-1 text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-md"><span class="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span> Urgent</span>
-</div>
-<h3 class="font-bold text-slate-800 text-sm md:text-lg leading-snug cursor-pointer hover:text-red-600 transition-colors line-clamp-2 md:line-clamp-1">A+ Blood Required Urgently</h3>
-<div class="flex flex-col md:flex-row md:gap-6 mt-1 md:mt-2">
-<p class="text-xs md:text-sm text-slate-500 flex items-center gap-1 md:gap-1.5 truncate">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 md:w-3.5 md:h-3.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-Belle Vue Hospital, Kolkata
-</p>
-</div>
-<p class="text-xs md:text-sm font-medium text-slate-700 mt-1 truncate">2 Units Needed • Patient in ICU</p>
-</div>
-<div class="flex items-center gap-2 mt-3 md:mt-4">
-<div class="flex -space-x-2">
-<img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=7" alt="">
-<img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=8" alt="">
-</div>
-<span class="text-[10px] md:text-sm text-slate-600 font-medium">12 donors available</span>
-</div>
-</div>
-<div class="mt-3 md:mt-0 flex flex-row md:flex-col justify-between items-center md:items-end md:w-40 md:border-l border-slate-100 md:pl-5 shrink-0 gap-2 md:gap-4">
-<div class="text-left md:text-right hidden md:block">
-<p class="text-xs text-slate-500 flex items-center justify-end gap-1 mb-2">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-1.8 km<br>Away
-</p>
-</div>
-<button class="w-full md:w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 md:py-2.5 rounded-lg md:rounded-xl transition-colors text-xs md:text-sm shadow-sm active:scale-95">Help Now</button>
-</div>
-</div>
-</div>
-
-<div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-row gap-4 lg:gap-5 hover:shadow-md transition-shadow w-full">
-<img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=200&auto=format&fit=crop" alt="Awareness" class="w-24 h-24 md:w-36 md:h-36 rounded-xl object-cover shrink-0 cursor-pointer" onclick="openJoinModal('Thalassemia Awareness Campaign')">
-<div class="flex-1 flex flex-col md:flex-row md:justify-between py-1 min-w-0">
-<div class="flex flex-col justify-between flex-1 pr-0 md:pr-4">
-<div>
-<div class="flex justify-between items-start mb-1 md:mb-2">
-<span class="text-[10px] md:text-[11px] font-bold text-purple-600 bg-purple-50 px-2 md:px-2.5 py-1 rounded md:rounded-md uppercase tracking-wide border border-purple-100 line-clamp-1">Awareness Event</span>
-</div>
-<h3 class="font-bold text-slate-800 text-sm md:text-lg leading-snug cursor-pointer hover:text-red-600 transition-colors line-clamp-2 md:line-clamp-1" onclick="openJoinModal('Thalassemia Awareness Campaign')">Thalassemia Awareness Campaign</h3>
-<div class="flex flex-col md:flex-row md:gap-6 mt-1 md:mt-2">
-<p class="text-xs md:text-sm text-slate-500 flex items-center gap-1 md:gap-1.5 truncate">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 md:w-3.5 md:h-3.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-Science City Auditorium
-</p>
-<p class="text-xs md:text-sm text-slate-500 flex items-center gap-1 md:gap-1.5 mt-0.5 md:mt-0 truncate">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 md:w-3.5 md:h-3.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-30 May 2024 • 11:00 AM
-</p>
-</div>
-</div>
-<div class="flex items-center gap-2 mt-3 md:mt-4">
-<div class="flex -space-x-2">
-<img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=9" alt="">
-<img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=10" alt="">
-<img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=12" alt="">
-</div>
-<span class="text-[10px] md:text-sm text-slate-600 font-medium">45 people joined</span>
-</div>
-</div>
-<div class="mt-3 md:mt-0 flex flex-row md:flex-col justify-between items-center md:items-end md:w-40 md:border-l border-slate-100 md:pl-5 shrink-0 gap-2 md:gap-4">
-<div class="text-left md:text-right hidden md:block">
-<p class="text-xs text-slate-500 flex items-center justify-end gap-1 mb-2">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-2.5 km<br>Away
-</p>
-</div>
-<button onclick="openJoinModal('Thalassemia Awareness Campaign')" class="w-full md:w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 md:py-2.5 rounded-lg md:rounded-xl transition-colors text-xs md:text-sm shadow-sm active:scale-95">Join Event</button>
-</div>
-</div>
-</div>
-</div>
-<div class="mt-8 text-center w-full" id="load-more-btn-container">
-<button onclick="loadMoreEvents()" class="bg-white border border-slate-200 text-slate-600 font-medium py-2.5 px-6 rounded-xl hover:bg-slate-50 transition-colors shadow-sm inline-flex items-center gap-2 text-sm active:scale-95">
-Load More Events
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-</button>
-</div>
-</div>
-
-<div class="lg:hidden mt-10">
-<div class="flex justify-between items-center mb-4">
-<h3 class="font-bold text-lg">Emergency Requests</h3>
-</div>
-<div class="flex flex-col gap-4">
-<div class="bg-red-50 rounded-2xl p-4 border border-red-100 relative">
-<div class="absolute top-4 right-4 bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Urgent</div>
-<div class="flex items-center gap-3 mb-3">
-<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-sm">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
-</svg>
-</div>
-<div>
-<h4 class="font-bold text-slate-800 text-sm">O- Blood Required</h4>
-<p class="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-Apollo Hospital, Kolkata
-</p>
-</div>
-</div>
-<div class="flex justify-between items-end">
-<div class="text-xs font-medium text-slate-600">
-<span class="text-slate-800 font-bold">2 Units Needed</span> • 3.0 km away
-</div>
-<button class="bg-red-600 text-white text-xs font-semibold px-5 py-2 rounded-xl active:scale-95 shadow-sm transition-transform">Help Now</button>
-</div>
-</div>
-
-<div class="bg-red-50 rounded-2xl p-4 border border-red-100 relative">
-<div class="absolute top-4 right-4 bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Urgent</div>
-<div class="flex items-center gap-3 mb-3">
-<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-sm">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
-</svg>
-</div>
-<div>
-<h4 class="font-bold text-slate-800 text-sm">A+ Blood Required</h4>
-<p class="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-Belle Vue Clinic, Kolkata
-</p>
-</div>
-</div>
-<div class="flex justify-between items-end">
-<div class="text-xs font-medium text-slate-600">
-<span class="text-slate-800 font-bold">1 Unit Needed</span> • 1.8 km away
-</div>
-<button class="bg-red-600 text-white text-xs font-semibold px-5 py-2 rounded-xl active:scale-95 shadow-sm transition-transform">Help Now</button>
-</div>
-</div>
-</div>
-<div class="mt-4 text-center">
-<button class="w-full bg-white border border-red-200 text-red-600 font-bold py-3 rounded-xl hover:bg-red-50 transition-colors shadow-sm text-sm active:scale-95">
-View All Emergencies
-</button>
-</div>
-</div>
-</main>
-
-<aside class="w-[320px] bg-white border-l border-slate-200 p-6 shrink-0 hidden xl:flex flex-col gap-8 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto hide-scrollbar z-30">
-<div>
-<div class="flex justify-between items-center mb-4">
-<h3 class="font-bold text-slate-900">Nearby Emergencies</h3>
-<span class="text-xs font-semibold text-slate-400">Live</span>
-</div>
-
-<div class="flex flex-col gap-3">
-<div class="bg-red-50 rounded-xl p-4 border border-red-100 flex items-start gap-3 cursor-pointer hover:shadow-md transition-shadow">
-<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-sm shrink-0">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-</div>
-<div class="flex-1">
-<h4 class="font-bold text-sm text-slate-800">B- Blood Required</h4>
-<p class="text-xs text-slate-600 mt-0.5">Ruby Hospital</p>
-<div class="flex justify-between items-center mt-2">
-<span class="text-xs font-medium text-slate-700">1 Unit • 2.1 km</span>
-<span class="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded border border-red-200">Urgent</span>
-</div>
-</div>
-</div>
-
-<div class="bg-red-50 rounded-xl p-4 border border-red-100 flex items-start gap-3 cursor-pointer hover:shadow-md transition-shadow">
-<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-sm shrink-0">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-</div>
-<div class="flex-1">
-<h4 class="font-bold text-sm text-slate-800">AB+ Blood Required</h4>
-<p class="text-xs text-slate-600 mt-0.5">Medica Hospital</p>
-<div class="flex justify-between items-center mt-2">
-<span class="text-xs font-medium text-slate-700">2 Units • 3.4 km</span>
-<span class="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded border border-red-200">Urgent</span>
-</div>
-</div>
-</div>
-
-<div class="bg-red-50 rounded-xl p-4 border border-red-100 flex items-start gap-3 cursor-pointer hover:shadow-md transition-shadow">
-<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-sm shrink-0">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-</div>
-<div class="flex-1">
-<h4 class="font-bold text-sm text-slate-800">O+ Platelets Required</h4>
-<p class="text-xs text-slate-600 mt-0.5">Fortis Hospital</p>
-<div class="flex justify-between items-center mt-2">
-<span class="text-xs font-medium text-slate-700">1 Unit • 4.2 km</span>
-<span class="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded border border-red-200">Urgent</span>
-</div>
-</div>
-</div>
-
-<div id="desktop-extra-emergencies" class="hidden flex-col gap-3 mt-0">
-<div class="bg-red-50 rounded-xl p-4 border border-red-100 flex items-start gap-3 cursor-pointer hover:shadow-md transition-shadow">
-<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-sm shrink-0">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-</div>
-<div class="flex-1">
-<h4 class="font-bold text-sm text-slate-800">A- Blood Required</h4>
-<p class="text-xs text-slate-600 mt-0.5">AMRI Hospital</p>
-<div class="flex justify-between items-center mt-2">
-<span class="text-xs font-medium text-slate-700">1 Unit • 5.0 km</span>
-<span class="text-[10px] font-bold text-slate-600 bg-slate-200 px-2 py-0.5 rounded border border-slate-300">Standard</span>
-</div>
-</div>
-</div>
-<div class="bg-red-50 rounded-xl p-4 border border-red-100 flex items-start gap-3 cursor-pointer hover:shadow-md transition-shadow">
-<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-sm shrink-0">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-</div>
-<div class="flex-1">
-<h4 class="font-bold text-sm text-slate-800">O- Blood Required</h4>
-<p class="text-xs text-slate-600 mt-0.5">CMRI Hospital</p>
-<div class="flex justify-between items-center mt-2">
-<span class="text-xs font-medium text-slate-700">3 Units • 7.1 km</span>
-<span class="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded border border-red-200">Urgent</span>
-</div>
-</div>
-</div>
-</div>
-
-<button id="desktop-toggle-emergencies-btn" onclick="toggleDesktopEmergencies()" class="w-full text-center text-sm font-semibold text-red-600 py-2 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100 mt-1">View All Requests</button>
-</div>
-</div>
-
-<div>
-<div class="flex justify-between items-center mb-4">
-<h3 class="font-bold text-slate-900">Blood Stock Nearby</h3>
-<a href="#" class="text-xs font-semibold text-slate-400 hover:text-red-600 transition-colors">View All</a>
-</div>
-<div class="flex flex-col gap-3">
-<div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50 cursor-pointer hover:border-slate-300 transition-colors">
-<span class="font-bold text-slate-700 w-10">O+</span>
-<div class="flex-1 mx-4 h-2 bg-slate-100 rounded-full overflow-hidden">
-<div class="h-full bg-green-500 w-4/5 rounded-full"></div>
-</div>
-<span class="text-xs font-semibold text-green-600 w-12 text-right">High</span>
-</div>
-<div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50 cursor-pointer hover:border-slate-300 transition-colors">
-<span class="font-bold text-slate-700 w-10">A+</span>
-<div class="flex-1 mx-4 h-2 bg-slate-100 rounded-full overflow-hidden">
-<div class="h-full bg-yellow-500 w-1/2 rounded-full"></div>
-</div>
-<span class="text-xs font-semibold text-yellow-600 w-12 text-right">Medium</span>
-</div>
-<div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50 cursor-pointer hover:border-slate-300 transition-colors">
-<span class="font-bold text-slate-700 w-10">B+</span>
-<div class="flex-1 mx-4 h-2 bg-slate-100 rounded-full overflow-hidden">
-<div class="h-full bg-green-500 w-3/4 rounded-full"></div>
-</div>
-<span class="text-xs font-semibold text-green-600 w-12 text-right">High</span>
-</div>
-<div class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50 cursor-pointer hover:border-slate-300 transition-colors">
-<span class="font-bold text-slate-700 w-10">AB+</span>
-<div class="flex-1 mx-4 h-2 bg-slate-100 rounded-full overflow-hidden">
-<div class="h-full bg-red-500 w-1/4 rounded-full"></div>
-</div>
-<span class="text-xs font-semibold text-red-600 w-12 text-right">Low</span>
-</div>
-</div>
-</div>
-
-<div class="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-<h3 class="font-bold text-slate-900 mb-4">RaktaMitra Rewards</h3>
-<div class="flex items-center gap-4 mb-5">
-<div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-amber-500 shrink-0 border-2 border-amber-200">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15.39l-3.76 2.27.99-4.28-3.32-2.88 4.38-.37L12 6.09l1.71 4.04 4.38.37-3.32 2.88.99 4.28z"/></svg>
-</div>
-<div>
-<div class="font-bold text-3xl text-slate-800 leading-none">1250</div>
-<div class="text-sm text-slate-500 font-medium mt-1">Points</div>
-</div>
-</div>
-<div class="mb-2 flex justify-between text-xs text-slate-500 font-medium">
-<span>Next Reward at 1500 Points</span>
-</div>
-<div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden mb-4">
-<div class="h-full bg-red-600 rounded-full" style="width: 83%"></div>
-</div>
-<a href="#" class="text-sm font-semibold text-red-600 hover:text-red-700 transition-colors flex items-center gap-1">
-See All Rewards
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-</a>
-</div>
-</aside>
-</div>
-
-<nav class="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 px-6 py-2.5 flex justify-between items-center z-50 rounded-t-3xl shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.1)]">
-<a href="index.html" class="flex flex-col items-center gap-1 text-red-600 cursor-pointer hover:opacity-80 transition-opacity">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-<span class="text-[10px] font-semibold">Home</span>
-</a>
-<a href="events.html" class="flex flex-col items-center gap-1 text-slate-400 cursor-pointer hover:text-red-600 transition-colors">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-<span class="text-[10px] font-medium">Events</span>
-</a>
-<a href="donate.html" class="relative -top-8 group px-2 cursor-pointer">
-<div class="w-[72px] h-[72px] bg-[#dc2626] rounded-full flex items-center justify-center text-white shadow-[0_8px_20px_-4px_rgba(220,38,38,0.6)] border-[6px] border-slate-50 active:scale-95 transition-all">
-<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-</div>
-</a>
-<a href="requests.html" class="flex flex-col items-center gap-1 text-slate-400 cursor-pointer hover:text-red-600 transition-colors">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-<span class="text-[10px] font-medium">Requests</span>
-</a>
-<a href="profile.html" class="flex flex-col items-center gap-1 text-slate-400 cursor-pointer hover:text-red-600 transition-colors">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-<span class="text-[10px] font-medium">Profile</span>
-</a>
-</nav>
-
-<div id="join-modal" class="fixed inset-0 bg-slate-900/60 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-<div class="bg-white rounded-[28px] p-6 lg:p-8 w-full max-w-md shadow-2xl relative transform scale-95 transition-transform duration-300" id="join-modal-content">
-<div class="absolute top-5 right-5 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 cursor-pointer hover:bg-slate-200 transition-colors" onclick="closeJoinModal()">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-</div>
-<div class="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-5">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-</div>
-<h3 class="text-2xl font-bold text-slate-900 mb-1">Join Event</h3>
-<p class="text-sm text-slate-500 mb-6 line-clamp-1" id="modal-event-name">Event Name</p>
-<form onsubmit="submitJoinForm(event)" class="flex flex-col gap-4">
-<div>
-<label class="block text-xs font-semibold text-slate-700 mb-1.5 ml-1">Full Name</label>
-<input type="text" id="join-name" required placeholder="Enter your full name" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-all text-sm">
-</div>
-<div>
-<label class="block text-xs font-semibold text-slate-700 mb-1.5 ml-1">Email Address</label>
-<input type="email" id="join-email" required placeholder="Enter your email" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-all text-sm">
-</div>
-<div>
-<label class="block text-xs font-semibold text-slate-700 mb-1.5 ml-1">Phone Number</label>
-<input type="tel" id="join-phone" required placeholder="Enter your phone number" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-all text-sm">
-</div>
-<div class="mt-4 flex gap-3">
-<button type="button" onclick="closeJoinModal()" class="flex-1 bg-white border border-slate-200 text-slate-700 font-semibold py-3.5 rounded-xl hover:bg-slate-50 transition-colors text-sm active:scale-95">Cancel</button>
-<button type="submit" class="flex-1 bg-red-600 text-white font-semibold py-3.5 rounded-xl hover:bg-red-700 transition-colors text-sm active:scale-95 shadow-md shadow-red-600/20">Confirm & Join</button>
-</div>
-</form>
-</div>
-</div>
-
-<div id="notifications-panel" class="fixed top-20 lg:top-16 right-4 lg:right-10 w-72 lg:w-80 bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-100 z-[9999] hidden flex-col overflow-hidden transform opacity-0 scale-95 transition-all duration-300 origin-top-right">
-<div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-<h3 class="font-bold text-slate-800 text-base">Notifications</h3>
-<button onclick="clearNotifications()" class="text-[11px] font-semibold text-red-600 hover:text-red-700 px-2.5 py-1 bg-red-50 rounded-md transition-colors">Clear All</button>
-</div>
-<div id="notifications-list" class="max-h-[60vh] overflow-y-auto">
-<div class="p-4 border-b border-slate-50 hover:bg-slate-50 cursor-pointer flex gap-3 items-start transition-colors">
-<div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-</div>
-<div>
-<p class="font-bold text-slate-800 mb-0.5 text-sm">Emergency Match</p>
-<p class="text-xs text-slate-500 leading-snug">Urgent B- blood needed at Ruby Hospital. You match this request!</p>
-<span class="text-[10px] text-slate-400 mt-1.5 block font-medium">2 hours ago</span>
-</div>
-</div>
-<div class="p-4 border-b border-slate-50 hover:bg-slate-50 cursor-pointer flex gap-3 items-start transition-colors">
-<div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-</div>
-<div>
-<p class="font-bold text-slate-800 mb-0.5 text-sm">Rewards Earned</p>
-<p class="text-xs text-slate-500 leading-snug">You just earned 250 points from your recent successful donation.</p>
-<span class="text-[10px] text-slate-400 mt-1.5 block font-medium">Yesterday</span>
-</div>
-</div>
-<div class="p-4 border-b border-slate-50 hover:bg-slate-50 cursor-pointer flex gap-3 items-start transition-colors">
-<div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-</div>
-<div>
-<p class="font-bold text-slate-800 mb-0.5 text-sm">Upcoming Camp</p>
-<p class="text-xs text-slate-500 leading-snug">Reminder: The City Blood Donation Drive is starting tomorrow at 10 AM.</p>
-<span class="text-[10px] text-slate-400 mt-1.5 block font-medium">2 days ago</span>
-</div>
-</div>
-</div>
-<div id="empty-notifs" class="hidden p-6 text-center flex-col items-center justify-center text-slate-400">
-<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-3 opacity-20"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-<p class="text-sm font-medium">No new notifications</p>
-</div>
+<div id="app-container">
+    <div id="canvas-container">
+        <canvas id="ecgCanvas"></canvas>
+    </div>
+    <div class="vignette"></div>
+    
+    <div id="ui-layer">
+        <div class="top-section">
+            <div class="icon-container">
+                <svg class="drop-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.5c-3.3 0-6-2.7-6-6 0-3.5 6-10.5 6-10.5s6 7 6 10.5c0 3.3-2.7 6-6 6z"/>
+                </svg>
+                <svg class="cross-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5v4H5v6h4v4h6v-4h4V9h-4V5H9z"/>
+                </svg>
+            </div>
+            <h1 class="brand-text">RaktaMitra</h1>
+            <p class="subtitle mt-4">Connecting Donors,<br>Saving Lives</p>
+        </div>
+        <div class="bottom-section">
+            <button id="welcome-btn" class="welcome-btn" onclick="window.location.href='home.html'">Welcome</button>
+        </div>
+    </div>
 </div>
 
 <script>
-let notifCount = 3;
-let panelOpen = false;
-
-function toggleDesktopEmergencies() {
-    const extra = document.getElementById('desktop-extra-emergencies');
-    const btn = document.getElementById('desktop-toggle-emergencies-btn');
-    if(extra && btn) {
-        if (extra.classList.contains('hidden')) {
-            extra.classList.remove('hidden');
-            extra.classList.add('flex');
-            btn.innerText = 'View Less';
-        } else {
-            extra.classList.add('hidden');
-            extra.classList.remove('flex');
-            btn.innerText = 'View All Requests';
-        }
-    }
-}
-
-const extraEvents = [
-    { type: "Donation Camp", typeColor: "red", title: "Rotary Club Blood Drive", loc: "Salt Lake, Kolkata", date: "02 Jun 2024 • 09:00 AM", joined: 65, img: "https://images.unsplash.com/photo-1536856136534-bb679c52a9aa?q=80&w=200&auto=format&fit=crop" },
-    { type: "Awareness Event", typeColor: "purple", title: "Youth Blood Awareness Fest", loc: "Jadavpur University", date: "05 Jun 2024 • 02:00 PM", joined: 120, img: "https://images.unsplash.com/photo-1542884748-2b87b36c6b90?q=80&w=200&auto=format&fit=crop" },
-    { type: "Donation Camp", typeColor: "red", title: "Tech Park Blood Drive", loc: "Sector V, Salt Lake", date: "10 Jun 2024 • 10:00 AM", joined: 45, img: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=200&auto=format&fit=crop" }
-];
-
-function loadMoreEvents() {
-    const container = document.getElementById('events-container');
-    const btnContainer = document.getElementById('load-more-btn-container');
+    const canvas = document.getElementById('ecgCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
     
-    let html = '';
-    extraEvents.forEach(e => {
-        const typeClass = e.typeColor === 'red' ? 'text-red-600 bg-red-50 border-red-100' : 'text-purple-600 bg-purple-50 border-purple-100';
-        const btnClass = e.typeColor === 'red' ? 'bg-red-600 hover:bg-red-700' : 'bg-purple-600 hover:bg-purple-700';
+    let splitOffset = 0; 
+    let targetSplitOffset = 0;
+    
+    let lineOpacity = 1;
+    let targetLineOpacity = 1;
+
+    let time = 0;
+    const points = [];
+    let maxPoints = 300; 
+    
+    let baseY = 0;
+
+    function initECG() {
+        if (points.length > 0) return; 
+
+        const spacing = 4;
+        maxPoints = Math.ceil(width / spacing) + 50; 
         
-        html += `
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-row gap-4 lg:gap-5 hover:shadow-md transition-shadow w-full transform opacity-0 translate-y-4 animate-[fadeIn_0.5s_ease_forwards]">
-        <img src="${e.img}" alt="Event" class="w-24 h-24 md:w-36 md:h-36 rounded-xl object-cover shrink-0 cursor-pointer" onclick="openJoinModal('${e.title}')">
-        <div class="flex-1 flex flex-col md:flex-row md:justify-between py-1 min-w-0">
-        <div class="flex flex-col justify-between flex-1 pr-0 md:pr-4">
-        <div>
-        <div class="flex justify-between items-start mb-1 md:mb-2">
-        <span class="text-[10px] md:text-[11px] font-bold px-2 md:px-2.5 py-1 rounded md:rounded-md uppercase tracking-wide border line-clamp-1 ${typeClass}">${e.type}</span>
-        </div>
-        <h3 class="font-bold text-slate-800 text-sm md:text-lg leading-snug cursor-pointer hover:text-red-600 transition-colors line-clamp-2 md:line-clamp-1" onclick="openJoinModal('${e.title}')">${e.title}</h3>
-        <div class="flex flex-col md:flex-row md:gap-6 mt-1 md:mt-2">
-        <p class="text-xs md:text-sm text-slate-500 flex items-center gap-1 md:gap-1.5 truncate">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 md:w-3.5 md:h-3.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-        ${e.loc}
-        </p>
-        <p class="text-xs md:text-sm text-slate-500 flex items-center gap-1 md:gap-1.5 mt-0.5 md:mt-0 truncate">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 md:w-3.5 md:h-3.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-        ${e.date}
-        </p>
-        </div>
-        </div>
-        <div class="flex items-center gap-2 mt-3 md:mt-4">
-        <div class="flex -space-x-2">
-        <img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=${Math.floor(Math.random() * 20)}" alt="">
-        <img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=${Math.floor(Math.random() * 20) + 20}" alt="">
-        <img class="w-6 h-6 md:w-8 md:h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=${Math.floor(Math.random() * 20) + 40}" alt="">
-        </div>
-        <span class="text-[10px] md:text-sm text-slate-600 font-medium">${e.joined} people joined</span>
-        </div>
-        </div>
-        <div class="mt-3 md:mt-0 flex flex-row md:flex-col justify-between items-center md:items-end md:w-40 md:border-l border-slate-100 md:pl-5 shrink-0 gap-2 md:gap-4">
-        <div class="text-left md:text-right hidden md:block">
-        <p class="text-xs text-slate-500 flex items-center justify-end gap-1 mb-2">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-        4.5 km<br>Away
-        </p>
-        </div>
-        <button onclick="openJoinModal('${e.title}')" class="w-full md:w-full text-white font-semibold py-2 md:py-2.5 rounded-lg md:rounded-xl transition-colors text-xs md:text-sm shadow-sm active:scale-95 ${btnClass}">Join Event</button>
-        </div>
-        </div>
-        </div>`;
-    });
-    
-    container.insertAdjacentHTML('beforeend', html);
-    btnContainer.style.display = 'none';
-}
-
-function openJoinModal(eventName) {
-    const modal = document.getElementById('join-modal');
-    const content = document.getElementById('join-modal-content');
-    document.getElementById('modal-event-name').textContent = eventName;
-    
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    
-    void modal.offsetWidth;
-    
-    modal.classList.remove('opacity-0');
-    content.classList.remove('scale-95');
-    content.classList.add('scale-100');
-}
-
-function closeJoinModal() {
-    const modal = document.getElementById('join-modal');
-    const content = document.getElementById('join-modal-content');
-    
-    modal.classList.add('opacity-0');
-    content.classList.remove('scale-100');
-    content.classList.add('scale-95');
-    
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }, 300);
-}
-
-function submitJoinForm(e) {
-    e.preventDefault();
-    const eventName = document.getElementById('modal-event-name').textContent;
-    const name = document.getElementById('join-name').value;
-    
-    closeJoinModal();
-    addNotification(`Registration confirmed for ${name}. You're all set for the ${eventName}!`, eventName);
-    e.target.reset();
-
-    setTimeout(() => {
-        if(!panelOpen) {
-            toggleNotifications();
+        for (let x = width; x >= -200; x -= spacing) {
+            points.unshift({ x: x, yOffset: 0, isPeak: false });
         }
-    }, 300); 
-}
-
-function addNotification(text, title = "Event Registration") {
-    const list = document.getElementById('notifications-list');
-    const emptyState = document.getElementById('empty-notifs');
-    if (emptyState) emptyState.classList.add('hidden');
-    
-    const notif = document.createElement('div');
-    notif.className = 'p-4 border-b border-slate-50 hover:bg-slate-50 cursor-pointer flex gap-3 items-start transition-colors bg-green-50/30';
-    notif.innerHTML = `
-        <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center shrink-0 mt-0.5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-        </div>
-        <div>
-            <p class="font-bold text-slate-800 mb-0.5 text-sm">${title}</p>
-            <p class="text-xs text-slate-500 leading-snug">${text}</p>
-            <span class="text-[10px] text-slate-400 mt-1.5 block font-medium text-green-600">Just now</span>
-        </div>
-    `;
-    list.prepend(notif);
-    
-    notifCount++;
-    updateNotifBadge();
-}
-
-function toggleNotifications() {
-    const panel = document.getElementById('notifications-panel');
-    if(panelOpen) {
-        panel.classList.remove('opacity-100', 'scale-100');
-        panel.classList.add('opacity-0', 'scale-95');
-        setTimeout(() => {
-            panel.classList.add('hidden');
-            panel.classList.remove('flex');
-        }, 300);
-        panelOpen = false;
-    } else {
-        panel.classList.remove('hidden');
-        panel.classList.add('flex');
-        void panel.offsetWidth;
-        panel.classList.add('opacity-100', 'scale-100');
-        panel.classList.remove('opacity-0', 'scale-95');
-        panelOpen = true;
     }
-}
 
-function clearNotifications() {
-    document.getElementById('notifications-list').innerHTML = '';
-    document.getElementById('empty-notifs').classList.remove('hidden');
-    document.getElementById('empty-notifs').classList.add('flex');
-    notifCount = 0;
-    updateNotifBadge();
-    toggleNotifications();
-}
+    function resize() {
+        const container = document.getElementById('canvas-container');
+        width = container.clientWidth;
+        height = container.clientHeight;
+        canvas.width = width * window.devicePixelRatio;
+        canvas.height = height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        
+        // Responsive placement: Center on mobile (<=767px), lower on larger screens
+        baseY = width <= 767 ? height * 0.5 : height * 0.65;
+        initECG();
+    }
+    
+    window.addEventListener('resize', resize);
+    resize();
 
-function updateNotifBadge() {
-    const badges = document.querySelectorAll('.notif-badge');
-    badges.forEach(b => {
-        b.textContent = notifCount;
-        if(notifCount > 0) {
-            b.classList.remove('hidden');
-            b.classList.add('flex');
-        } else {
-            b.classList.add('hidden');
-            b.classList.remove('flex');
+    const particles = [];
+    for (let i = 0; i < 80; i++) {
+        const isWhite = Math.random() > 0.5;
+        particles.push({
+            x: Math.random() * 1000,
+            y: Math.random() * 1000,
+            size: Math.random() * 2.5 + 0.5,
+            speedY: -(Math.random() * 1 + 0.2),
+            speedX: (Math.random() - 0.5) * 0.5,
+            opacity: Math.random() * 0.5 + 0.1,
+            color: isWhite 
+                ? `rgba(255, 255, 255, ` 
+                : `rgba(0, 85, 255, `,
+            isWhite: isWhite
+        });
+    }
+
+    const beatPattern = [
+        [0, 0],       
+        [10, -5],     
+        [20, 0],
+        [25, 0],      
+        [30, 15],     
+        [35, -120],
+        [40, 30],     
+        [45, 0],      
+        [60, -15],    
+        [75, 0],
+        [100, 0]      
+    ];
+
+    let isBeating = false;
+    let beatProgress = 0;
+    let peakPointTagged = false;
+    let animationStage = 0;
+    
+    // Start normal speed
+    setTimeout(() => { animationStage = 1; }, 1500);
+
+    function addECGPoint() {
+        let x = width; 
+        let yOffset = 0;
+        let isCurrentPeak = false;
+
+        for (let i = 0; i < points.length; i++) {
+            points[i].x -= 4; 
         }
-    });
-}
-</script>
 
-<style>
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-</style>
+        if (isBeating) {
+            let prevNode = beatPattern[0];
+            let nextNode = beatPattern[beatPattern.length - 1];
+            
+            for (let i = 0; i < beatPattern.length - 1; i++) {
+                if (beatProgress >= beatPattern[i][0] && beatProgress <= beatPattern[i+1][0]) {
+                    prevNode = beatPattern[i];
+                    nextNode = beatPattern[i+1];
+                    break;
+                }
+            }
+
+            const segmentProgress = (beatProgress - prevNode[0]) / (nextNode[0] - prevNode[0]);
+            yOffset = prevNode[1] + (nextNode[1] - prevNode[1]) * segmentProgress;
+            
+            if (beatProgress >= 35 && !peakPointTagged) {
+                isCurrentPeak = true;
+                peakPointTagged = true;
+            }
+
+            yOffset *= (animationStage === 1 ? 2.2 : 1);
+            beatProgress += 2.5;
+
+            if (beatProgress >= beatPattern[beatPattern.length - 1][0]) {
+                isBeating = false;
+                beatProgress = 0;
+            }
+        } else {
+            yOffset = Math.sin(time * 0.1) * 2;
+            
+            if ((animationStage === 0 || animationStage === 4 || animationStage === 5) && Math.random() < 0.01) {
+                isBeating = true;
+                peakPointTagged = false;
+                beatProgress = 0;
+            }
+        }
+
+        points.push({ x: x, yOffset: yOffset, isPeak: isCurrentPeak });
+
+        if (points.length > maxPoints) points.shift();
+    }
+
+    const explosionParticles = [];
+    function triggerReveal() {
+        const uiLayer = document.getElementById('ui-layer');
+        
+        // 1. Reveal State (Lines fade out, Text + Drop show)
+        uiLayer.className = 'ui-state-reveal';
+        targetSplitOffset = height * 0.28; 
+        targetLineOpacity = 0;
+        animationStage = 2;
+        
+        for(let i=0; i<50; i++) {
+            const isWhite = Math.random() > 0.5;
+            explosionParticles.push({
+                x: width/2,
+                y: baseY, 
+                vx: (Math.random() - 0.5) * 18,
+                vy: (Math.random() - 0.5) * 18,
+                life: 1.0,
+                color: isWhite ? `hsl(0, 0%, ${60 + Math.random()*40}%)` : `hsl(220, 100%, ${50 + Math.random()*20}%)`
+            });
+        }
+
+        // 2. Morph State (Drop becomes Cross)
+        setTimeout(() => {
+            uiLayer.className = 'ui-state-morph1';
+            animationStage = 3;
+        }, 2500);
+
+        // 3. Close State (Cross hides, text stays, lines fade back in and merge)
+        setTimeout(() => {
+            uiLayer.className = 'ui-state-close';
+            targetSplitOffset = 0;
+            targetLineOpacity = 1;
+            animationStage = 4;
+        }, 5000);
+
+        // 4. Welcome State (Lines are merged, show the button)
+        setTimeout(() => {
+            uiLayer.className = 'ui-state-welcome';
+            animationStage = 5; 
+        }, 6500);
+    }
+
+    function drawECG() {
+        if (points.length < 2 || lineOpacity < 0.01) return;
+
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = lineOpacity;
+        
+        const drawLine = (yShift, colorObj) => {
+            const passes = [
+                { width: 6, color: `rgba(${colorObj.rgb}, 0.5)`, blur: 5 },
+                { width: 2, color: '#ffffff', blur: 0 }
+            ];
+
+            passes.forEach(pass => {
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, baseY + yShift + points[0].yOffset);
+                
+                for (let i = 1; i < points.length; i++) {
+                    const xc = (points[i].x + points[i-1].x) / 2;
+                    const yc = baseY + yShift + (points[i].yOffset + points[i-1].yOffset) / 2;
+                    ctx.quadraticCurveTo(points[i-1].x, baseY + yShift + points[i-1].yOffset, xc, yc);
+                }
+                ctx.lineTo(points[points.length-1].x, baseY + yShift + points[points.length-1].yOffset);
+
+                ctx.lineWidth = pass.width;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.shadowBlur = pass.blur;
+                ctx.shadowColor = pass.blur > 0 ? colorObj.hex : 'transparent';
+                
+                const gradient = ctx.createLinearGradient(0, 0, width, 0);
+                gradient.addColorStop(0, 'rgba(255,255,255,0)');
+                gradient.addColorStop(0.15, pass.color);
+                gradient.addColorStop(1, pass.color);
+                ctx.strokeStyle = gradient;
+
+                ctx.stroke();
+            });
+        };
+
+        if (splitOffset < 1) {
+            drawLine(0, { rgb: '0, 85, 255', hex: '#0055ff' });
+        } else {
+            drawLine(-splitOffset, { rgb: '255, 255, 255', hex: '#ffffff' });
+            drawLine(splitOffset, { rgb: '0, 85, 255', hex: '#0055ff' });
+        }
+        
+        ctx.globalAlpha = 1.0;
+        ctx.globalCompositeOperation = 'source-over';
+    }
+
+    function drawExplosion() {
+        for(let i = explosionParticles.length - 1; i >= 0; i--) {
+            let p = explosionParticles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life -= 0.02; 
+            
+            if(p.life <= 0) {
+                explosionParticles.splice(i, 1);
+                continue;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, Math.max(0, p.life * 5), 0, Math.PI*2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(0, p.life);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1.0;
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        time++;
+
+        splitOffset += (targetSplitOffset - splitOffset) * 0.05; 
+        lineOpacity += (targetLineOpacity - lineOpacity) * 0.05; 
+
+        if (animationStage === 1 && !isBeating && targetSplitOffset === 0) {
+            isBeating = true;
+            peakPointTagged = false;
+            beatProgress = 0;
+        }
+
+        addECGPoint();
+
+        const peakIndex = points.findIndex(p => p.isPeak);
+        if (peakIndex !== -1) {
+            if (points[peakIndex].x <= width / 2 && animationStage === 1) {
+                points[peakIndex].isPeak = false;
+                triggerReveal();
+            } else if (points[peakIndex].x < -50) {
+                points[peakIndex].isPeak = false; 
+            }
+        }
+
+        particles.forEach(p => {
+            p.y += p.speedY;
+            p.x += p.speedX;
+            if (p.y < -10) {
+                p.y = height + 10;
+                p.x = Math.random() * width;
+            }
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = p.color + p.opacity + ')';
+            ctx.fill();
+        });
+
+        drawECG();
+        if(explosionParticles.length > 0) drawExplosion();
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+</script>
 </body>
 </html>
