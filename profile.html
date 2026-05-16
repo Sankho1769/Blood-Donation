@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RaktaMitra - Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { 
+                        brand: '#e11d48',
+                        darkbg: '#0f172a',
+                        darkcard: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        * { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+        
+        .section-view {
+            display: none;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .section-view.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.875rem;
+            border: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .dark .input-field {
+            background-color: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #e11d48;
+            box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+        }
+
+        /* Success Animation Elements */
+        .success-blob {
+            position: absolute;
+            border-radius: 50%;
+            animation: blob-bounce 2s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes blob-bounce {
+            0% { transform: scale(0.8) translate(-10px, -10px); }
+            100% { transform: scale(1.1) translate(10px, 10px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-950 flex items-center justify-center min-h-screen font-sans">
+
+    <!-- Fullscreen Success Animation Overlay -->
+    <div id="successAnimation" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="relative w-full max-w-[350px] mx-4">
+            <!-- Animated Background Blobs -->
+            <div class="success-blob w-40 h-40 bg-emerald-500/30 blur-2xl top-0 right-0"></div>
+            <div class="success-blob w-32 h-32 bg-brand/30 blur-2xl bottom-0 left-0" style="animation-delay: 1s;"></div>
+            
+            <div id="successModal" class="bg-white dark:bg-darkcard rounded-[2.5rem] p-8 text-center shadow-2xl border border-gray-100 dark:border-gray-800 transform scale-50 opacity-0 transition-all duration-500 relative z-10">
+                <div class="w-24 h-24 mx-auto rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-5 relative">
+                    <div class="absolute inset-0 rounded-full border-4 border-emerald-400 animate-ping opacity-75"></div>
+                    <i class="fa-solid fa-check text-5xl text-emerald-500 animate-bounce"></i>
+                </div>
+                <h2 class="text-3xl font-black text-gray-900 dark:text-white mb-2 tracking-tight">Awesome! 🎉</h2>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">You're completely eligible.<br>Let's save some lives today!</p>
+                <div class="mt-6 w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                    <div class="bg-emerald-500 h-full animate-[loading_2.5s_ease-in-out_forwards]"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>@keyframes loading { from { width: 0%; } to { width: 100%; } }</style>
+
+    <div class="relative w-full max-w-[400px] h-[850px] max-h-screen bg-gray-50 dark:bg-darkbg flex flex-col overflow-hidden sm:rounded-[2.5rem] sm:shadow-2xl sm:border-[8px] border-gray-900 dark:border-gray-800">
+        
+        <header class="flex justify-between items-center px-6 py-4 bg-white/90 dark:bg-darkbg/90 backdrop-blur-md z-40 sticky top-0 border-b border-gray-200 dark:border-gray-800">
+            <div class="flex items-center gap-3">
+                <button id="backBtn" class="text-gray-500 dark:text-gray-400 hover:text-brand text-xl cursor-pointer" style="display: none;">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <h1 id="headerTitle" class="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">My Profile</h1>
+            </div>
+            <div class="flex items-center gap-5 text-gray-500 dark:text-gray-400 text-xl">
+                <button id="themeToggle" class="hover:text-brand transition cursor-pointer">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto pb-28 px-5 pt-6 space-y-6">
+            
+            <!-- MAIN PROFILE VIEW -->
+            <div id="mainView" class="section-view active space-y-6">
+                
+                <div class="bg-gradient-to-br from-brand to-rose-500 rounded-3xl p-6 text-white shadow-lg shadow-brand/30 relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                    <div class="absolute -left-6 -bottom-6 w-24 h-24 bg-black/10 rounded-full blur-xl"></div>
+                    
+                    <div class="relative z-10 flex items-center gap-4">
+                        <div class="relative">
+                            <div class="w-20 h-20 rounded-2xl bg-white/20 border-4 border-white/20 shadow-md flex items-center justify-center text-3xl font-extrabold text-white">
+                                N
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 bg-white text-brand text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm border border-brand/10">
+                                O+
+                            </div>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold mb-1">Nandini</h2>
+                            <p class="text-xs text-rose-100 flex items-center gap-1 mb-2">
+                                <i class="fa-solid fa-location-dot"></i> Salt Lake, Kolkata
+                            </p>
+                            <span class="bg-white/20 backdrop-blur-sm border border-white/30 text-[10px] px-2.5 py-1 rounded-full font-semibold">
+                                <i class="fa-solid fa-medal text-yellow-300 mr-1"></i> Gold Donor
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 text-center flex flex-col items-center justify-center gap-1">
+                        <div class="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-900/20 text-brand flex items-center justify-center mb-1">
+                            <i class="fa-solid fa-droplet text-lg"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">8</h3>
+                        <p class="text-[9px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide">Donations</p>
+                    </div>
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 text-center flex flex-col items-center justify-center gap-1">
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 flex items-center justify-center mb-1">
+                            <i class="fa-solid fa-heart-pulse text-lg"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">24</h3>
+                        <p class="text-[9px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide">Lives Saved</p>
+                    </div>
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 text-center flex flex-col items-center justify-center gap-1">
+                        <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center mb-1">
+                            <i class="fa-solid fa-award text-lg"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">5</h3>
+                        <p class="text-[9px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide">Badges</p>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC ELIGIBILITY WIDGET -->
+                <div id="eligibilityWidget" class="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-3xl p-4 shadow-sm flex items-center justify-between transition-all duration-500">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-800/50 flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-stethoscope text-blue-600 dark:text-blue-400 text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-blue-900 dark:text-blue-100 text-sm">Check Eligibility</h4>
+                            <p class="text-[10px] text-blue-700 dark:text-blue-400 mt-0.5">Take a quick 1-min quiz</p>
+                        </div>
+                    </div>
+                    <button id="startQuizBtn" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors shadow-md shadow-blue-600/20">
+                        Check
+                    </button>
+                </div>
+
+                <div class="bg-white dark:bg-darkcard rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
+                    <div class="px-5 py-4 border-b border-gray-50 dark:border-gray-800">
+                        <h3 class="font-bold text-gray-900 dark:text-white text-sm">Account Settings</h3>
+                    </div>
+                    <div class="flex flex-col">
+                        <button class="settingsBtn px-5 py-3.5 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group" data-section="personal">
+                            <div class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:text-brand group-hover:bg-brand/10 transition-colors">
+                                    <i class="fa-regular fa-user text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-sm font-semibold block">Personal Information</span>
+                                    <span class="text-[10px] text-gray-400 dark:text-gray-500">Name, Email, Phone</span>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                        </button>
+                        
+                        <button class="settingsBtn px-5 py-3.5 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group" data-section="medical">
+                            <div class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:text-brand group-hover:bg-brand/10 transition-colors">
+                                    <i class="fa-solid fa-notes-medical text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-sm font-semibold block">Medical History</span>
+                                    <span class="text-[10px] text-gray-400 dark:text-gray-500">Health & conditions</span>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                        </button>
+
+                        <button class="settingsBtn px-5 py-3.5 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group" data-section="donation">
+                            <div class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:text-brand group-hover:bg-brand/10 transition-colors">
+                                    <i class="fa-regular fa-clock text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-sm font-semibold block">Donation History</span>
+                                    <span class="text-[10px] text-gray-400 dark:text-gray-500">Past donations & dates</span>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                        </button>
+
+                        <button class="settingsBtn px-5 py-3.5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group" data-section="notifications">
+                            <div class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:text-brand group-hover:bg-brand/10 transition-colors">
+                                    <i class="fa-regular fa-bell text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-sm font-semibold block">Notifications</span>
+                                    <span class="text-[10px] text-gray-400 dark:text-gray-500">Alerts & preferences</span>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-darkcard rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden mb-6">
+                    <div class="flex flex-col">
+                        <button class="w-full px-5 py-4 flex items-center gap-3 text-brand hover:bg-rose-50 dark:hover:bg-rose-900/10 transition-colors" onclick="window.location.href='login.html'">
+                            <div class="w-8 h-8 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center">
+                                <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+                            </div>
+                            <span class="text-sm font-bold">Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ELIGIBILITY QUIZ VIEW -->
+            <div id="eligibilityQuizView" class="section-view space-y-5">
+                <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-3xl p-5 text-center">
+                    <div class="w-12 h-12 bg-white dark:bg-darkcard rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+                        <i class="fa-solid fa-clipboard-list text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-blue-900 dark:text-blue-100 text-base mb-1">Donor Questionnaire</h3>
+                    <p class="text-xs text-blue-700 dark:text-blue-400">Please answer honestly to ensure patient safety.</p>
+                </div>
+
+                <form id="quizForm" class="space-y-4">
+                    <!-- Q1 -->
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3">1. Are you between 18 and 65 years old?</p>
+                        <div class="flex gap-3">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="q1" value="yes" class="peer sr-only">
+                                <div class="text-center py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-brand peer-checked:border-brand peer-checked:text-white text-gray-600 dark:text-gray-400 text-sm font-bold transition-all">Yes</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="q1" value="no" class="peer sr-only">
+                                <div class="text-center py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-gray-800 peer-checked:border-gray-800 peer-checked:text-white text-gray-600 dark:text-gray-400 text-sm font-bold transition-all">No</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3">2. Do you weigh more than 50 kg?</p>
+                        <div class="flex gap-3">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="q2" value="yes" class="peer sr-only">
+                                <div class="text-center py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-brand peer-checked:border-brand peer-checked:text-white text-gray-600 dark:text-gray-400 text-sm font-bold transition-all">Yes</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="q2" value="no" class="peer sr-only">
+                                <div class="text-center py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-gray-800 peer-checked:border-gray-800 peer-checked:text-white text-gray-600 dark:text-gray-400 text-sm font-bold transition-all">No</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3">3. Have you had a tattoo or piercing in the last 6 months?</p>
+                        <div class="flex gap-3">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="q3" value="yes" class="peer sr-only">
+                                <div class="text-center py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-gray-800 peer-checked:border-gray-800 peer-checked:text-white text-gray-600 dark:text-gray-400 text-sm font-bold transition-all">Yes</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="q3" value="no" class="peer sr-only">
+                                <div class="text-center py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-brand peer-checked:border-brand peer-checked:text-white text-gray-600 dark:text-gray-400 text-sm font-bold transition-all">No</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3">4. Have you taken antibiotics or had a fever in the last 48 hours?</p>
+                        <div class="flex gap-3">
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="q4" value="yes" class="peer sr-only">
+                                <div class="text-center py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-gray-800 peer-checked:border-gray-800 peer-checked:text-white text-gray-600 dark:text-gray-400 text-sm font-bold transition-all">Yes</div>
+                            </label>
+                            <label class="flex-1 cursor-pointer">
+                                <input type="radio" name="q4" value="no" class="peer sr-only">
+                                <div class="text-center py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 peer-checked:bg-brand peer-checked:border-brand peer-checked:text-white text-gray-600 dark:text-gray-400 text-sm font-bold transition-all">No</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="quizErrorMsg" class="hidden bg-rose-50 text-brand p-3 rounded-xl text-xs font-bold text-center border border-rose-200">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> Based on your answers, you are currently not eligible to donate.
+                    </div>
+
+                    <button type="button" id="submitQuizBtn" class="w-full bg-brand hover:bg-rose-700 text-white font-bold py-3.5 rounded-2xl transition-colors shadow-lg shadow-brand/30 mt-2 text-sm">
+                        Submit Answers
+                    </button>
+                </form>
+            </div>
+
+            <!-- OTHER VIEWS (Personal, Medical, etc.) -->
+            <div id="personalView" class="section-view space-y-4">
+                <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-2xl p-4">
+                    <h3 class="font-bold text-blue-900 dark:text-blue-100 text-sm mb-2">Personal Information</h3>
+                    <p class="text-[10px] text-blue-700 dark:text-blue-400">Update your name, email, phone number and other details</p>
+                </div>
+                <div><label class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 block">Full Name</label><input type="text" value="Nandini" class="input-field"></div>
+                <div><label class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 block">Email Address</label><input type="email" value="nandini@example.com" class="input-field"></div>
+                <div><label class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 block">Phone Number</label><input type="tel" value="+91 98765 43210" class="input-field"></div>
+                <button class="w-full bg-brand hover:bg-rose-700 text-white font-bold py-3 rounded-2xl shadow-lg mt-4">Save Changes</button>
+            </div>
+
+            <div id="medicalView" class="section-view space-y-4">
+                <div class="bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800/30 rounded-2xl p-4">
+                    <h3 class="font-bold text-purple-900 dark:text-purple-100 text-sm mb-2">Medical History</h3>
+                    <p class="text-[10px] text-purple-700 dark:text-purple-400">Manage your health conditions and medical information</p>
+                </div>
+                <div><label class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 block">Blood Group</label><input type="text" value="O+" class="input-field" readonly></div>
+                <div><label class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 block">Weight (kg)</label><input type="number" value="65" class="input-field"></div>
+                <button class="w-full bg-brand hover:bg-rose-700 text-white font-bold py-3 rounded-2xl shadow-lg mt-4">Save Changes</button>
+            </div>
+
+            <div id="donationView" class="section-view space-y-4">
+                <div class="bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-800/30 rounded-2xl p-4">
+                    <h3 class="font-bold text-rose-900 dark:text-rose-100 text-sm mb-2">Donation History</h3>
+                    <p class="text-[10px] text-rose-700 dark:text-rose-400">View all your past blood donations</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
+                    <div class="flex justify-between items-start mb-2">
+                        <div><h4 class="font-bold text-gray-900 dark:text-white text-sm">Donation 1</h4><p class="text-[10px] text-gray-500">Salt Lake Center</p></div>
+                        <span class="bg-brand/10 text-brand text-[9px] font-bold px-2 py-1 rounded-lg">450 ml</span>
+                    </div>
+                    <p class="text-[9px] text-gray-400">12 Feb 2023 - 2:30 PM</p>
+                </div>
+            </div>
+
+            <div id="notificationsView" class="section-view space-y-4">
+                <div class="bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800/30 rounded-2xl p-4">
+                    <h3 class="font-bold text-orange-900 dark:text-orange-100 text-sm mb-2">Notification Settings</h3>
+                    <p class="text-[10px] text-orange-700 dark:text-orange-400">Manage how you receive alerts</p>
+                </div>
+                <div class="bg-white dark:bg-darkcard rounded-2xl p-4 border border-gray-100 flex items-center justify-between">
+                    <div><h4 class="font-bold text-gray-900 dark:text-white text-sm">Email Alerts</h4><p class="text-[10px] text-gray-500">Receive updates via email</p></div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:ring-2 peer-focus:ring-brand rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:bg-brand after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                    </label>
+                </div>
+            </div>
+
+        </main>
+
+        <nav class="bg-white/90 dark:bg-darkbg/90 backdrop-blur-xl border-t border-gray-100 dark:border-gray-800 pt-3 pb-6 px-6 absolute bottom-0 w-full z-40">
+            <div class="flex justify-between items-end">
+                <a href="home.html" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-brand transition-colors group">
+                    <i class="fa-solid fa-house text-xl group-hover:scale-110 transition-transform"></i>
+                    <span class="text-[10px] font-bold">Home</span>
+                </a>
+                <a href="event.html" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-brand transition-colors group">
+                    <i class="fa-regular fa-calendar text-xl group-hover:scale-110 transition-transform"></i>
+                    <span class="text-[10px] font-semibold">Events</span>
+                </a>
+                
+                <div class="relative flex justify-center w-12">
+                    <a href="Blood_bank.html" class="absolute -top-10 bg-gradient-to-tr from-brand to-rose-400 w-14 h-14 rounded-2xl rotate-45 flex items-center justify-center shadow-lg shadow-brand/40 border-4 border-white dark:border-darkbg hover:scale-105 active:scale-95 transition-all">
+                        <i class="fa-solid fa-droplet text-white text-xl -rotate-45"></i>
+                    </a>
+                </div>
+
+                <a href="blood.html" class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-brand transition-colors group">
+                    <i class="fa-regular fa-file-lines text-xl group-hover:scale-110 transition-transform"></i>
+                    <span class="text-[10px] font-semibold">About</span>
+                </a>
+                <a href="profile.html" class="flex flex-col items-center gap-1 text-brand group">
+                    <i class="fa-solid fa-user text-xl group-hover:scale-110 transition-transform"></i>
+                    <span class="text-[10px] font-semibold">Profile</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+        const backBtn = document.getElementById('backBtn');
+        const headerTitle = document.getElementById('headerTitle');
+        const mainView = document.getElementById('mainView');
+
+        // Theme Setup
+        let isDarkMode = localStorage.getItem('theme') === 'dark';
+        if (isDarkMode) {
+            htmlElement.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            const isDark = htmlElement.classList.contains('dark');
+            themeIcon.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+        // Navigation Logic
+        const sectionTitles = {
+            personal: 'Personal Information',
+            medical: 'Medical History',
+            donation: 'Donation History',
+            notifications: 'Notifications',
+            eligibilityQuiz: 'Eligibility Check'
+        };
+
+        function showView(viewId, title) {
+            document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            headerTitle.textContent = title;
+            backBtn.style.display = 'block';
+        }
+
+        document.querySelectorAll('.settingsBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const section = btn.dataset.section;
+                showView(section + 'View', sectionTitles[section]);
+            });
+        });
+
+        document.getElementById('startQuizBtn')?.addEventListener('click', () => {
+            showView('eligibilityQuizView', sectionTitles.eligibilityQuiz);
+            document.getElementById('quizErrorMsg').classList.add('hidden');
+            document.getElementById('quizForm').reset();
+        });
+
+        backBtn.addEventListener('click', () => {
+            document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
+            mainView.classList.add('active');
+            headerTitle.textContent = 'My Profile';
+            backBtn.style.display = 'none';
+        });
+
+        // Eligibility Quiz Logic & Outstanding Animation
+        document.getElementById('submitQuizBtn').addEventListener('click', () => {
+            const form = document.getElementById('quizForm');
+            const q1 = form.querySelector('input[name="q1"]:checked')?.value;
+            const q2 = form.querySelector('input[name="q2"]:checked')?.value;
+            const q3 = form.querySelector('input[name="q3"]:checked')?.value;
+            const q4 = form.querySelector('input[name="q4"]:checked')?.value;
+            const errorMsg = document.getElementById('quizErrorMsg');
+
+            if (!q1 || !q2 || !q3 || !q4) {
+                errorMsg.innerHTML = '<i class="fa-solid fa-circle-info mr-1"></i> Please answer all questions.';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // Ideal scenario: q1=yes, q2=yes, q3=no, q4=no
+            if (q1 === 'yes' && q2 === 'yes' && q3 === 'no' && q4 === 'no') {
+                errorMsg.classList.add('hidden');
+                
+                // Trigger Outstanding Animation
+                const overlay = document.getElementById('successAnimation');
+                const modal = document.getElementById('successModal');
+                
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.remove('scale-50', 'opacity-0');
+                    modal.classList.add('scale-100', 'opacity-100');
+                }, 100);
+
+                // Create confetti
+                for(let i=0; i<40; i++) {
+                    createConfettiPiece();
+                }
+
+                // Wait for 2.5 seconds, then transition back
+                setTimeout(() => {
+                    modal.classList.remove('scale-100', 'opacity-100');
+                    modal.classList.add('scale-50', 'opacity-0');
+                    overlay.classList.add('opacity-0', 'pointer-events-none');
+
+                    // Update UI Widget in Main View
+                    const widget = document.getElementById('eligibilityWidget');
+                    widget.className = "bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800/30 rounded-3xl p-4 shadow-sm flex items-center justify-between";
+                    widget.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-800/50 flex items-center justify-center">
+                                <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-emerald-900 dark:text-emerald-100 text-sm">Eligible to Donate</h4>
+                                <p class="text-[10px] text-emerald-700 dark:text-emerald-400 mt-0.5">Checked Just Now</p>
+                            </div>
+                        </div>
+                        <a href="donate.html" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors shadow-md shadow-emerald-600/20">
+                            Book
+                        </a>
+                    `;
+
+                    // Return to Main Profile View
+                    document.querySelectorAll('.section-view').forEach(v => v.classList.remove('active'));
+                    mainView.classList.add('active');
+                    headerTitle.textContent = 'My Profile';
+                    backBtn.style.display = 'none';
+
+                }, 2800);
+
+            } else {
+                errorMsg.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Based on your answers, you are currently not eligible to donate.';
+                errorMsg.classList.remove('hidden');
+            }
+        });
+
+        function createConfettiPiece() {
+            const colors = ['#e11d48', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
+            const conf = document.createElement('div');
+            conf.className = 'absolute w-2 h-2 rounded-sm z-20';
+            conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            conf.style.left = '50%';
+            conf.style.top = '50%';
+            
+            const tx = (Math.random() - 0.5) * 400;
+            const ty = (Math.random() - 0.5) * 400 - 100;
+            const rot = Math.random() * 360;
+            
+            conf.animate([
+                { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0) rotate(${rot}deg)`, opacity: 0 }
+            ], {
+                duration: 1000 + Math.random() * 1500,
+                easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                fill: 'forwards'
+            });
+            
+            document.getElementById('successAnimation').appendChild(conf);
+            setTimeout(() => conf.remove(), 2500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RaktaMitra Events</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body x-data="{ 
+    isDarkMode: false, 
+    activeTab: 'All', 
+    isModalOpen: false,
+    isNotificationOpen: false,
+    previewImage: null,
+    events: [
+        { id: 1, type: 'Blood Donation', tag: 'BLOOD DONATION CAMP', tagColor: 'text-red-600 bg-red-50', title: 'Mega City Blood Donation Drive', location: 'Eco Park, Kolkata', date: '25 Jan 2024', time: '10:00 AM', image: 'https://images.unsplash.com/photo-1615461066841-6116e61058f4?auto=format&fit=crop&q=80&w=800' },
+        { id: 2, type: 'Emergency', tag: 'URGENT REQUIREMENT', tagColor: 'text-white bg-red-600', title: 'O+ Blood Required URGENTLY', location: 'Apollo Gleneagles Hospital', date: '16 May 2026', time: 'Immediate', image: 'https://images.unsplash.com/photo-1582719478250-c890e4428489?auto=format&fit=crop&q=80&w=800' },
+        { id: 3, type: 'Blood Donation', tag: 'DONATION CAMP', tagColor: 'text-red-600 bg-red-50', title: 'Lions Club Annual Blood Drive', location: 'Salt Lake Stadium', date: '02 Jun 2026', time: '09:00 AM', image: 'https://images.unsplash.com/photo-1536856136534-bb679c52a9aa?auto=format&fit=crop&q=80&w=800' },
+        { id: 4, type: 'Awareness', tag: 'AWARENESS CAMP', tagColor: 'text-blue-600 bg-blue-50', title: 'Youth Blood Donation Awareness', location: 'Jadavpur University Campus', date: '20 May 2026', time: '11:00 AM', image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=800' },
+        { id: 5, type: 'Emergency', tag: 'EMERGENCY', tagColor: 'text-white bg-red-600', title: 'A- Negative Blood Needed', location: 'Fortis Hospital, Anandapur', date: '17 May 2026', time: 'Within 2 Hours', image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=800' },
+        { id: 6, type: 'Blood Donation', tag: 'MEGA CAMPAIGN', tagColor: 'text-red-600 bg-red-50', title: 'Red Cross Summer Campaign', location: 'Science City Ground', date: '10 Jun 2026', time: '09:00 AM', image: 'https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&q=80&w=800' },
+        { id: 7, type: 'Awareness', tag: 'AWARENESS DRIVE', tagColor: 'text-blue-600 bg-blue-50', title: 'Corporate Health & Blood Campaign', location: 'Sector V, Salt Lake', date: '12 Jun 2026', time: '04:00 PM', image: 'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&q=80&w=800' },
+        { id: 8, type: 'Emergency', tag: 'URGENT REQUIREMENT', tagColor: 'text-white bg-red-600', title: 'B+ Platelets Required', location: 'AMRI Hospital, Dhakuria', date: '16 May 2026', time: 'Immediate', image: 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&q=80&w=800' },
+        { id: 9, type: 'Blood Donation', tag: 'COLLEGE CAMPAIGN', tagColor: 'text-red-600 bg-red-50', title: 'Presidency Uni Blood Camp', location: 'College Street', date: '25 Jun 2026', time: '11:00 AM', image: 'https://images.unsplash.com/photo-1523580494112-071d1694063c?auto=format&fit=crop&q=80&w=800' }
+    ],
+    notifications: [
+        { id: 1, eventId: 2, text: 'Urgent O+ blood needed at Apollo Hospital.', time: '5 mins ago', read: false },
+        { id: 2, eventId: null, text: 'Your recent post was successfully published.', time: '1 hour ago', read: false },
+        { id: 3, eventId: 1, text: 'Mega Blood Drive is happening near you tomorrow.', time: '1 day ago', read: true }
+    ],
+    newPost: { type: 'Blood Donation', title: '', location: '', date: '', time: '' },
+    submitPost() {
+        if(!this.newPost.title) return;
+        const post = {
+            id: Date.now(),
+            type: this.newPost.type,
+            tag: this.newPost.type === 'Emergency' ? 'URGENT REQUIREMENT' : (this.newPost.type === 'Awareness' ? 'AWARENESS CAMP' : 'DONATION CAMP'),
+            tagColor: this.newPost.type === 'Emergency' ? 'text-white bg-red-600' : (this.newPost.type === 'Awareness' ? 'text-blue-600 bg-blue-50' : 'text-red-600 bg-red-50'),
+            title: this.newPost.title,
+            location: this.newPost.location,
+            date: this.newPost.date || 'Today',
+            time: this.newPost.time || 'Now',
+            image: this.previewImage || 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=800'
+        };
+        this.events = [post, ...this.events];
+        this.isModalOpen = false;
+        this.newPost = { type: 'Blood Donation', title: '', location: '', date: '', time: '' };
+        this.previewImage = null;
+    }
+}" :class="isDarkMode ? 'bg-gray-950' : 'bg-gray-50'" class="h-screen overflow-hidden flex justify-center font-sans transition-colors duration-300">
+
+    <div :class="isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-slate-900'" class="w-full max-w-md h-full relative shadow-2xl overflow-hidden flex flex-col">
+        
+        <header :class="isDarkMode ? 'bg-gray-900/90 shadow-gray-950/50' : 'bg-white/90'" class="flex items-center justify-between px-5 py-4 sticky top-0 z-20 shadow-sm backdrop-blur-md">
+            <a href="home.html" class="flex items-center gap-2">
+                <i data-lucide="droplet" class="text-red-600 fill-red-600 w-6 h-6"></i>
+                <span class="font-bold text-xl">RaktaMitra</span>
+            </a>
+            <div class="flex gap-4 items-center">
+                <button @click="isDarkMode = !isDarkMode" class="p-2 rounded-full transition-colors" :class="isDarkMode ? 'bg-gray-800 text-yellow-400' : 'bg-gray-100 text-slate-600'">
+                    <i :data-lucide="isDarkMode ? 'sun' : 'moon'" class="w-4 h-4"></i>
+                </button>
+                <i data-lucide="search" class="w-6 h-6 opacity-70"></i>
+                <div class="relative" @click.away="isNotificationOpen = false">
+                    <button @click="isNotificationOpen = !isNotificationOpen" class="relative focus:outline-none flex items-center justify-center">
+                        <i data-lucide="bell" class="w-6 h-6 opacity-70 transition-transform active:scale-95"></i>
+                        <span x-show="notifications.filter(n => !n.read).length > 0" x-text="notifications.filter(n => !n.read).length" class="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-current"></span>
+                    </button>
+                    
+                    <!-- Notifications Dropdown -->
+                    <div x-show="isNotificationOpen" x-cloak 
+                         x-transition.opacity.duration.200ms
+                         :class="isDarkMode ? 'bg-gray-800 border-gray-700 text-white shadow-gray-950/50' : 'bg-white border-gray-100 text-slate-800 shadow-xl'"
+                         class="absolute right-0 mt-4 w-72 rounded-2xl border overflow-hidden z-50 transform origin-top-right">
+                        <div class="p-3 border-b flex justify-between items-center" :class="isDarkMode ? 'border-gray-700' : 'border-gray-100'">
+                            <span class="font-bold text-sm">Notifications</span>
+                            <button @click="notifications.forEach(n => n.read = true)" class="text-xs text-red-500 font-semibold hover:underline">Mark all read</button>
+                        </div>
+                        <div class="max-h-80 overflow-y-auto hide-scrollbar">
+                            <template x-for="notif in notifications" :key="notif.id">
+                                <div @click="notif.read = true; if(notif.eventId) { isNotificationOpen = false; activeTab = 'All'; setTimeout(() => { const el = document.getElementById('event-'+notif.eventId); if(el) { el.scrollIntoView({behavior: 'smooth', block: 'center'}); el.classList.add('ring-4', 'ring-red-500', 'transition-all', 'duration-500'); setTimeout(() => el.classList.remove('ring-4', 'ring-red-500'), 2000); } }, 150); }" 
+                                     :class="[notif.read ? 'opacity-60' : '', isDarkMode ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-50 hover:bg-gray-50']" 
+                                     class="p-4 border-b last:border-0 cursor-pointer transition-colors relative">
+                                    <div x-show="!notif.read" class="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-600 rounded-full"></div>
+                                    <p class="text-xs font-medium mb-1 leading-snug pl-2" x-text="notif.text"></p>
+                                    <p class="text-[10px] text-gray-400 pl-2" x-text="notif.time"></p>
+                                </div>
+                            </template>
+                            <div x-show="notifications.length === 0" class="p-6 text-center text-xs text-gray-400">
+                                No new notifications
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto pb-32 hide-scrollbar scroll-smooth">
+            <div :class="isDarkMode ? 'bg-gray-900' : 'bg-white'" class="px-5 py-4 sticky top-0 z-10">
+                <h1 class="text-2xl font-bold mb-4">Events Hub</h1>
+                <!-- Added flex-nowrap and scroll snapping for native-like horizontal scroll -->
+                <div class="flex flex-nowrap overflow-x-auto gap-2 pb-2 -mx-5 px-5 hide-scrollbar snap-x">
+                    <template x-for="tab in ['All', 'Blood Donation', 'Emergency', 'Awareness', 'Campaigns']">
+                        <button 
+                            @click="activeTab = tab"
+                            :class="activeTab === tab ? 'bg-red-600 text-white shadow-lg shadow-red-500/30 border-red-600' : (isDarkMode ? 'bg-gray-800 border-gray-700 text-gray-300' : 'bg-white border-gray-200 text-slate-500')"
+                            class="px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 border shrink-0 snap-start"
+                            x-text="tab === 'Emergency' ? '🚨 Emergency' : tab">
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <div class="px-5 py-2 space-y-6">
+                <!-- Updated filter logic to include the new 'Campaigns' tab for events with 'CAMPAIGN' in their tag -->
+                <template x-for="event in events.filter(e => activeTab === 'All' || e.type === activeTab || (activeTab === 'Campaigns' && e.tag.includes('CAMPAIGN')))" :key="event.id">
+                    <div :id="'event-' + event.id" :class="isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'" class="group rounded-3xl overflow-hidden shadow-md border transition-all duration-300">
+                        <div class="relative h-48 overflow-hidden">
+                            <img :src="event.image" class="w-full h-full object-cover">
+                            <div class="absolute top-4 left-4">
+                                <span :class="event.tagColor" class="text-[10px] font-black px-3 py-1.5 rounded-lg shadow-lg backdrop-blur-md" x-text="event.tag"></span>
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg mb-3 leading-tight" x-text="event.title"></h3>
+                            <div class="grid grid-cols-2 gap-3 mt-4 border-t border-dashed border-gray-200 pt-4 opacity-80 text-[11px] font-medium">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-500"></i>
+                                    <span class="truncate" x-text="event.location"></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-blue-500"></i>
+                                    <span x-text="event.date"></span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="clock" class="w-3.5 h-3.5 text-orange-500"></i>
+                                    <span x-text="event.time"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </main>
+
+        <nav :class="isDarkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-100'" class="fixed bottom-0 w-full max-w-md border-t px-6 py-4 flex justify-between items-center z-30 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
+            <a href="home.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-red-500 transition-colors">
+                <i data-lucide="home" class="w-6 h-6"></i>
+                <span class="text-[10px] font-semibold">Home</span>
+            </a>
+            <a href="event.html" class="flex flex-col items-center gap-1 text-red-600">
+                <i data-lucide="calendar" class="w-6 h-6"></i>
+                <span class="text-[10px] font-bold">Events</span>
+            </a>
+            
+            <a href="Blood_bank.html" class="flex items-center justify-center w-16 h-16 bg-red-600 rounded-full shadow-xl shadow-red-500/40 border-[5px] transition-transform active:scale-95" :class="isDarkMode ? 'border-gray-900' : 'border-white'">
+                <i data-lucide="droplet" class="w-8 h-8 text-white fill-white"></i>
+            </a>
+
+            <a href="blood.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-red-500 transition-colors">
+                <i data-lucide="file-text" class="w-6 h-6"></i>
+                <span class="text-[10px] font-semibold">about</span>
+            </a>
+            <a href="profile.html" class="flex flex-col items-center gap-1 text-slate-400 hover:text-red-500 transition-colors">
+                <i data-lucide="user" class="w-6 h-6"></i>
+                <span class="text-[10px] font-semibold">Profile</span>
+            </a>
+        </nav>
+
+        <button @click="isModalOpen = true" class="absolute bottom-28 right-6 w-16 h-16 bg-red-600 text-white rounded-2xl shadow-2xl shadow-red-500/50 flex items-center justify-center hover:bg-red-700 active:scale-95 transition-all z-40 transform hover:-translate-y-1">
+            <i data-lucide="plus" class="w-8 h-8 stroke-[3]"></i>
+        </button>
+
+        <div x-show="isModalOpen" x-cloak class="absolute inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-md p-4" x-transition.opacity>
+            <div @click.away="isModalOpen = false" :class="isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'" class="w-full max-w-sm rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl transition-transform duration-300" x-transition:enter="translate-y-full" x-transition:enter-end="translate-y-0">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-black">Post New Event</h2>
+                    <button @click="isModalOpen = false" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                
+                <form @submit.prevent="submitPost" class="space-y-4">
+                    <div @click="$refs.fileInput.click()" :class="isDarkMode ? 'border-gray-600 bg-gray-900/50 hover:bg-gray-900' : 'border-gray-200 bg-gray-50 hover:bg-gray-100'" class="w-full h-32 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden relative">
+                        <template x-if="previewImage">
+                            <img :src="previewImage" class="w-full h-full object-cover">
+                        </template>
+                        <template x-if="!previewImage">
+                            <div class="flex flex-col items-center">
+                                <i data-lucide="image" class="w-8 h-8 text-gray-400 mb-2"></i>
+                                <p class="text-xs font-bold text-gray-500">Attach Poster or Photo</p>
+                            </div>
+                        </template>
+                        <input type="file" x-ref="fileInput" hidden accept="image/*" @change="const file = $event.target.files[0]; if(file){ const reader = new FileReader(); reader.onload = (e) => previewImage = e.target.result; reader.readAsDataURL(file); }">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-wider mb-1.5 opacity-60">Category</label>
+                        <select x-model="newPost.type" :class="isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'" class="w-full p-3 text-sm rounded-xl border focus:ring-2 focus:ring-red-500 outline-none">
+                            <option value="Blood Donation">Blood Donation Camp</option>
+                            <option value="Emergency">Emergency Requirement</option>
+                            <option value="Awareness">Awareness Camp</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-wider mb-1.5 opacity-60">Post Title</label>
+                        <input x-model="newPost.title" type="text" required placeholder="E.g., Urgent O+ Needed" :class="isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'" class="w-full p-3 text-sm rounded-xl border focus:ring-2 focus:ring-red-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-wider mb-1.5 opacity-60">Address</label>
+                        <input x-model="newPost.location" type="text" required placeholder="Full location details" :class="isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'" class="w-full p-3 text-sm rounded-xl border focus:ring-2 focus:ring-red-500 outline-none">
+                    </div>
+
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-black uppercase tracking-wider mb-1.5 opacity-60">Date</label>
+                            <input x-model="newPost.date" type="text" placeholder="25 Jan" :class="isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'" class="w-full p-3 text-sm rounded-xl border">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-black uppercase tracking-wider mb-1.5 opacity-60">Time</label>
+                            <input x-model="newPost.time" type="text" placeholder="10:00 AM" :class="isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'" class="w-full p-3 text-sm rounded-xl border">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full mt-4 bg-red-600 text-white font-black py-4 rounded-2xl shadow-xl shadow-red-500/30 hover:bg-red-700 active:scale-95">
+                        Post Now
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+        
+        window.addEventListener('alpine:initialized', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

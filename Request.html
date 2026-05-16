@@ -1,435 +1,532 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>RaktaMitra — Find Donors</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>RaktaMitra — Find Help</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
---red:#C0392B;--red2:#E74C3C;--red3:#FF6B6B;
---bg:#0A0A0A;--bg2:#111;--surface:#181818;--card:#1E1E1E;--card2:#242424;
---border:#2A2A2A;--border2:#333;
---text:#F0EDE8;--text2:#A89F96;--text3:#665F58;
---shadow:rgba(0,0,0,0.6);
---tog-bg:#2A2A2A;--tog-knob:#F0EDE8;
+  --red:#C0392B;--red2:#E74C3C;--red3:#FF6B6B;
+  --bg:#F5F0EB;--bg2:#EDE8E1;--sur:#FFFFFF;--card:#FAF7F4;--card2:#F0EBE4;
+  --bdr:#E2DAD0;--bdr2:#CFC5B8;
+  --txt:#1C1410;--txt2:#6B5D50;--txt3:#A8998A;
+  --blue:#1D4ED8;--blue2:#3B82F6;--blue-bg:rgba(29,78,216,0.07);--blue-bdr:rgba(29,78,216,0.18);
+  --shd:rgba(28,20,16,0.10);
+  --tog-track:#E2DAD0;--tog-knob:#fff;
 }
-[data-theme="light"]{
---bg:#F7F3EE;--bg2:#EDE9E3;--surface:#FFFFFF;--card:#F0EDE8;--card2:#E8E3DC;
---border:#DDD8D0;--border2:#C8C0B5;
---text:#1A1511;--text2:#6B5F54;--text3:#9E9088;
---shadow:rgba(0,0,0,0.12);
---tog-bg:#E0DBD4;--tog-knob:#1A1511;
+[data-theme="dark"]{
+  --bg:#0D0B09;--bg2:#141210;--sur:#1A1714;--card:#201D1A;--card2:#272320;
+  --bdr:#2E2925;--bdr2:#3D3830;
+  --txt:#F0EBE4;--txt2:#9A8B7C;--txt3:#5A4E44;
+  --blue:#60A5FA;--blue2:#93C5FD;--blue-bg:rgba(96,165,250,0.08);--blue-bdr:rgba(96,165,250,0.2);
+  --shd:rgba(0,0,0,0.55);
+  --tog-track:#2E2925;--tog-knob:#F0EBE4;
 }
+
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{height:100%}
-body{
-font-family:'Syne',sans-serif;background:var(--bg);color:var(--text);
-min-height:100vh;overflow-x:hidden;transition:background 0.5s,color 0.5s;
-}
+html{height:100%;background:#1a1a1a}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;transition:background 0.45s,color 0.45s}
 
-::-webkit-scrollbar{width:0}
+.frame{width:100%;max-width:430px;min-height:100vh;position:relative;background:var(--bg);
+  transition:background 0.45s;overflow:hidden}
 
-.grain{
-pointer-events:none;position:fixed;inset:0;z-index:999;opacity:0.03;
-background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-background-size:200px 200px;
-}
+.grain{pointer-events:none;position:fixed;inset:0;z-index:99;opacity:0.022;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px}
 
-.orb{
-position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;
-transition:opacity 0.6s;
-}
-.orb1{width:400px;height:400px;background:radial-gradient(circle,rgba(192,57,43,0.18),transparent 70%);top:-100px;right:-100px}
-.orb2{width:300px;height:300px;background:radial-gradient(circle,rgba(192,57,43,0.1),transparent 70%);bottom:100px;left:-80px}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;transition:opacity 0.5s,background 0.5s}
+.orb1{width:380px;height:380px;background:radial-gradient(circle,rgba(192,57,43,0.14),transparent 70%);top:-100px;right:-80px}
+.orb2{width:260px;height:260px;background:radial-gradient(circle,rgba(192,57,43,0.08),transparent 70%);bottom:120px;left:-60px}
+[data-theme="dark"] .orb1{background:radial-gradient(circle,rgba(192,57,43,0.22),transparent 70%)}
+[data-theme="dark"] .orb2{background:radial-gradient(circle,rgba(192,57,43,0.12),transparent 70%)}
 
 header{
-position:sticky;top:0;z-index:100;
-padding:16px 20px;
-display:flex;align-items:center;justify-content:space-between;
-background:rgba(10,10,10,0.85);
-backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-border-bottom:1px solid var(--border);
-transition:background 0.5s,border-color 0.5s;
+  position:sticky;top:0;z-index:50;
+  padding:14px 20px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(245,240,235,0.88);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border-bottom:1px solid var(--bdr);transition:background 0.45s,border-color 0.45s;
 }
-[data-theme="light"] header{background:rgba(247,243,238,0.85)}
+[data-theme="dark"] header{background:rgba(13,11,9,0.88)}
 
-.back-btn{
-width:38px;height:38px;border-radius:12px;border:1px solid var(--border2);
-background:var(--card);display:flex;align-items:center;justify-content:center;
-cursor:pointer;color:var(--text);font-size:18px;transition:all 0.2s;flex-shrink:0;
+.logo-row{display:flex;align-items:center;gap:9px}
+.logo-drop{
+  width:34px;height:34px;background:linear-gradient(135deg,var(--red),var(--red3));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 4px 14px rgba(192,57,43,0.45);
+  animation:logoPulse 2.8s ease-in-out infinite;
 }
-.back-btn:hover{background:var(--card2);border-color:var(--red);transform:scale(1.05)}
-.back-btn:active{transform:scale(0.92)}
+@keyframes logoPulse{0%,100%{box-shadow:0 4px 14px rgba(192,57,43,0.45)}50%{box-shadow:0 4px 26px rgba(192,57,43,0.8),0 0 36px rgba(231,76,60,0.2)}}
+.logo-text{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--txt);transition:color 0.45s}
+.logo-text b{color:var(--red3)}
 
-.header-center{flex:1;text-align:center}
-.header-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--text);transition:color 0.5s}
-.header-sub{font-size:10px;color:var(--text2);margin-top:1px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:color 0.5s}
+.tog-wrap{display:flex;align-items:center;gap:8px}
+.tog-label{font-size:11px;font-weight:600;color:var(--txt2);letter-spacing:0.5px;transition:color 0.45s}
+.tog{
+  width:50px;height:27px;border-radius:30px;
+  background:var(--tog-track);border:1px solid var(--bdr2);
+  cursor:pointer;position:relative;transition:background 0.4s,border-color 0.4s;flex-shrink:0;
+}
+[data-theme="dark"] .tog{background:#3D3830}
+.tok{
+  position:absolute;top:2px;left:2px;width:21px;height:21px;border-radius:50%;
+  background:var(--tog-knob);display:flex;align-items:center;justify-content:center;font-size:12px;
+  transition:transform 0.42s cubic-bezier(0.34,1.56,0.64,1),background 0.4s;
+  box-shadow:0 2px 8px rgba(0,0,0,0.18);
+}
+[data-theme="dark"] .tok{transform:translateX(23px)}
 
-.theme-toggle{
-width:52px;height:28px;border-radius:20px;background:var(--tog-bg);
-border:1px solid var(--border2);cursor:pointer;position:relative;
-transition:background 0.4s,border-color 0.4s;flex-shrink:0;
+.hero{padding:28px 20px 20px;position:relative;z-index:1}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--red2);margin-bottom:10px;
 }
-.theme-toggle:hover{border-color:var(--red)}
-.tog-knob{
-position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
-background:var(--tog-knob);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),background 0.4s;
-display:flex;align-items:center;justify-content:center;font-size:11px;
-}
-[data-theme="light"] .tog-knob{transform:translateX(24px)}
-
-.hero{
-padding:28px 20px 24px;position:relative;overflow:hidden;
-}
-.hero-label{
-display:inline-flex;align-items:center;gap:6px;
-font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
-color:var(--red3);margin-bottom:10px;
-}
-.hero-label::before{content:'';width:20px;height:1.5px;background:var(--red3);display:block;animation:lineGrow 1s ease both}
-@keyframes lineGrow{from{width:0}to{width:20px}}
+.hero-eyebrow-line{width:22px;height:2px;background:var(--red2);border-radius:2px;animation:lineGrow 0.9s ease both}
+@keyframes lineGrow{from{width:0}to{width:22px}}
 .hero-title{
-font-family:'Playfair Display',serif;font-size:32px;font-weight:900;
-color:var(--text);line-height:1.1;margin-bottom:6px;
-animation:titleDrop 0.7s cubic-bezier(0.22,1,0.36,1) both;transition:color 0.5s;
+  font-family:'Playfair Display',serif;font-size:30px;font-weight:900;
+  color:var(--txt);line-height:1.12;margin-bottom:8px;
+  animation:dropIn 0.65s cubic-bezier(0.22,1,0.36,1) both;transition:color 0.45s;
 }
 .hero-title em{color:var(--red3);font-style:italic}
-@keyframes titleDrop{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
-.hero-count{font-size:13px;color:var(--text2);animation:fadeUp 0.7s 0.1s both;transition:color 0.5s}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.live-dot{display:inline-block;width:7px;height:7px;background:#22c55e;border-radius:50%;margin-right:5px;animation:livePulse 1.5s ease infinite}
-@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)}60%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:none}}
+.hero-sub{font-size:13px;color:var(--txt2);line-height:1.6;animation:fadeUp 0.65s 0.1s both;transition:color 0.45s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-.search-wrap{
-padding:0 20px 20px;animation:fadeUp 0.6s 0.15s both;
+.mode-toggle-bar{
+  margin:0 20px 26px;padding:6px;
+  background:var(--card2);border:1px solid var(--bdr);border-radius:20px;
+  display:flex;gap:0;position:relative;z-index:1;
+  animation:fadeUp 0.65s 0.15s both;
 }
-.search-box{
-display:flex;align-items:center;gap:10px;
-background:var(--surface);border:1px solid var(--border);border-radius:16px;
-padding:12px 16px;transition:all 0.3s;
+.mode-tab{
+  flex:1;padding:12px 8px;border-radius:14px;font-size:13px;font-weight:700;
+  cursor:pointer;transition:all 0.3s;text-align:center;position:relative;z-index:1;
+  color:var(--txt2);letter-spacing:0.3px;
 }
-.search-box:focus-within{border-color:var(--red);box-shadow:0 0 0 3px rgba(192,57,43,0.12)}
-.search-icon{font-size:17px;flex-shrink:0;opacity:0.5}
-.search-input{flex:1;background:none;border:none;outline:none;font-size:14px;font-family:'Syne',sans-serif;color:var(--text);font-weight:500;transition:color 0.5s}
-.search-input::placeholder{color:var(--text3)}
-.filter-btn{
-width:34px;height:34px;border-radius:10px;border:1px solid var(--border2);
-background:var(--card);display:flex;align-items:center;justify-content:center;
-font-size:14px;cursor:pointer;flex-shrink:0;transition:all 0.2s;
+.mode-tab.active-emrg{
+  background:linear-gradient(135deg,var(--red),var(--red3));color:#fff;
+  box-shadow:0 6px 20px rgba(192,57,43,0.38);transform:scale(1.02);
 }
-.filter-btn:hover{background:rgba(192,57,43,0.1);border-color:var(--red)}
-.filter-btn:active{transform:scale(0.88)}
+.mode-tab.active-norm{
+  background:linear-gradient(135deg,#1D4ED8,#3B82F6);color:#fff;
+  box-shadow:0 6px 20px rgba(29,78,216,0.32);transform:scale(1.02);
+}
+.mode-tab:not(.active-emrg):not(.active-norm):hover{color:var(--txt);background:var(--sur)}
 
-.filter-chips{
-display:flex;gap:8px;padding:0 20px 22px;overflow-x:auto;scrollbar-width:none;
-animation:fadeUp 0.6s 0.2s both;
+.warn-pill{
+  margin:0 20px 20px;padding:10px 14px;
+  border-radius:12px;font-size:12px;font-weight:500;line-height:1.5;
+  animation:fadeUp 0.5s 0.2s both;transition:all 0.35s;
 }
-.filter-chips::-webkit-scrollbar{display:none}
-.chip{
-flex-shrink:0;padding:7px 14px;border-radius:30px;font-size:12px;font-weight:700;
-cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);
-transition:all 0.25s;letter-spacing:0.3px;
-}
-.chip:hover{border-color:var(--red);color:var(--red3);transform:translateY(-1px)}
-.chip.active{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 4px 16px rgba(192,57,43,0.4)}
-.chip:active{transform:scale(0.93)}
+.warn-pill.emrg-warn{background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.2);color:var(--red2)}
+.warn-pill.norm-warn{background:var(--blue-bg);border:1px solid var(--blue-bdr);color:var(--blue)}
+[data-theme="dark"] .warn-pill.emrg-warn{color:var(--red3)}
 
-.section-row{
-display:flex;align-items:center;justify-content:space-between;
-padding:0 20px 14px;animation:fadeUp 0.6s 0.25s both;
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px 14px;position:relative;z-index:1;
 }
-.sec-title{font-size:14px;font-weight:700;color:var(--text);letter-spacing:0.3px;transition:color 0.5s}
-.sec-link{font-size:11px;color:var(--red3);font-weight:700;cursor:pointer;padding:4px 10px;border-radius:8px;transition:background 0.2s}
-.sec-link:hover{background:rgba(192,57,43,0.1)}
+.sh-left h3{font-size:15px;font-weight:700;color:var(--txt);transition:color 0.45s}
+.sh-left p{font-size:11px;color:var(--txt2);margin-top:2px;transition:color 0.45s}
+.sh-badge{
+  font-size:10px;font-weight:800;padding:4px 12px;border-radius:20px;letter-spacing:0.5px;
+}
+.sh-badge.emrg{background:rgba(192,57,43,0.1);color:var(--red2);border:1px solid rgba(192,57,43,0.2)}
+.sh-badge.norm{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bdr)}
 
-.donors-grid{
-display:flex;flex-direction:column;gap:0;padding:0 20px;
-}
+.content-area{padding-bottom:32px;position:relative;z-index:1}
 
 .donor-card{
-background:var(--surface);border:1px solid var(--border);border-radius:20px;
-padding:16px;margin-bottom:14px;cursor:pointer;transition:all 0.3s;
-position:relative;overflow:hidden;
-animation:cardSlide 0.55s cubic-bezier(0.22,1,0.36,1) both;
+  background:var(--sur);border:1px solid var(--bdr);border-radius:20px;
+  padding:15px;margin:0 16px 12px;cursor:pointer;
+  transition:all 0.3s;position:relative;overflow:hidden;
+  animation:cardSlide 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
+@keyframes cardSlide{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:none}}
 .donor-card::before{
-content:'';position:absolute;left:0;top:0;bottom:0;width:0;
-background:linear-gradient(180deg,var(--red),var(--red3));
-border-radius:20px 0 0 20px;transition:width 0.3s;
+  content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(180deg,var(--red),var(--red3));
+  border-radius:20px 0 0 20px;transition:width 0.28s;
 }
-.donor-card:hover{transform:translateX(6px) translateY(-2px);border-color:var(--border2);box-shadow:0 12px 40px var(--shadow)}
+.donor-card:hover{transform:translateX(5px) translateY(-1px);border-color:var(--bdr2);box-shadow:0 10px 36px var(--shd)}
 .donor-card:hover::before{width:3px}
-.donor-card:active{transform:scale(0.98)}
-
-@keyframes cardSlide{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
-.donor-card:nth-child(1){animation-delay:0.05s}
-.donor-card:nth-child(2){animation-delay:0.1s}
-.donor-card:nth-child(3){animation-delay:0.15s}
-.donor-card:nth-child(4){animation-delay:0.2s}
-.donor-card:nth-child(5){animation-delay:0.25s}
-.donor-card:nth-child(6){animation-delay:0.3s}
-.donor-card:nth-child(7){animation-delay:0.35s}
-.donor-card:nth-child(8){animation-delay:0.4s}
-.donor-card:nth-child(9){animation-delay:0.45s}
-.donor-card:nth-child(10){animation-delay:0.5s}
+.donor-card:active{transform:scale(0.97)}
 
 .dc-top{display:flex;align-items:flex-start;gap:13px}
 .av-wrap{position:relative;flex-shrink:0}
 .av{
-width:52px;height:52px;border-radius:18px;display:flex;align-items:center;
-justify-content:center;font-size:17px;font-weight:800;color:#fff;
-font-family:'Playfair Display',serif;transition:transform 0.3s;
+  width:50px;height:50px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:#fff;
+  font-family:'Playfair Display',serif;transition:transform 0.3s;
 }
-.donor-card:hover .av{transform:scale(1.08) rotate(-3deg)}
-.av-badge{
-position:absolute;bottom:-3px;right:-3px;width:18px;height:18px;
-border-radius:6px;background:linear-gradient(135deg,var(--red),var(--red3));
-border:2px solid var(--surface);display:flex;align-items:center;justify-content:center;
-font-size:8px;color:#fff;font-weight:800;transition:border-color 0.5s;
+.donor-card:hover .av{transform:scale(1.1) rotate(-4deg)}
+.av-bg{position:absolute;inset:0;border-radius:16px;opacity:0.2;transition:opacity 0.3s}
+.donor-card:hover .av-bg{opacity:0.35}
+.av-blood{
+  position:absolute;bottom:-4px;right:-4px;
+  font-size:8px;font-weight:800;color:#fff;
+  padding:2px 6px;border-radius:6px;border:2px solid var(--sur);
+  background:linear-gradient(135deg,var(--red),var(--red3));transition:border-color 0.45s;white-space:nowrap;
 }
 .online-ring{
-position:absolute;top:-2px;right:-2px;width:12px;height:12px;
-background:#22c55e;border-radius:50%;border:2px solid var(--surface);
-animation:livePulse 2s ease infinite;transition:border-color 0.5s;
+  position:absolute;top:-2px;left:-2px;width:12px;height:12px;
+  background:#22c55e;border-radius:50%;border:2px solid var(--sur);
+  animation:onlinePulse 2s ease-in-out infinite;transition:border-color 0.45s;
 }
+@keyframes onlinePulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)}60%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
 
 .dc-info{flex:1;min-width:0}
-.dc-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px;transition:color 0.5s}
-.dc-loc{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;transition:color 0.5s}
+.dc-name{font-size:15px;font-weight:700;color:var(--txt);transition:color 0.45s}
+.dc-loc{font-size:11px;color:var(--txt2);margin-top:3px;transition:color 0.45s}
 .dc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
-.tag{font-size:9px;font-weight:700;letter-spacing:0.5px;padding:3px 8px;border-radius:7px;border:1px solid}
-.tag-exp{background:rgba(192,57,43,0.1);color:var(--red3);border-color:rgba(192,57,43,0.2)}
-.tag-don{background:rgba(34,197,94,0.08);color:#4ade80;border-color:rgba(34,197,94,0.2)}
-.tag-avail{background:rgba(234,179,8,0.08);color:#facc15;border-color:rgba(234,179,8,0.2)}
-[data-theme="light"] .tag-don{color:#16a34a;border-color:rgba(22,163,74,0.2)}
-[data-theme="light"] .tag-avail{color:#ca8a04;border-color:rgba(202,138,4,0.2)}
+.tag{font-size:9px;font-weight:700;padding:3px 8px;border-radius:7px;border:1px solid;letter-spacing:0.3px}
+.tag-r{background:rgba(192,57,43,0.07);color:var(--red2);border-color:rgba(192,57,43,0.18)}
+.tag-g{background:rgba(34,197,94,0.07);color:#16a34a;border-color:rgba(34,197,94,0.18)}
+[data-theme="dark"] .tag-g{color:#4ade80;background:rgba(34,197,94,0.09);border-color:rgba(34,197,94,0.22)}
+.tag-y{background:rgba(202,138,4,0.07);color:#b45309;border-color:rgba(202,138,4,0.18)}
+[data-theme="dark"] .tag-y{color:#facc15;background:rgba(234,179,8,0.09);border-color:rgba(234,179,8,0.22)}
 
-.dc-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.dc-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
 .blood-pill{
-font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;
-padding:5px 12px;border-radius:10px;
-background:linear-gradient(135deg,var(--red),var(--red3));
-box-shadow:0 4px 12px rgba(192,57,43,0.35);
-transition:transform 0.2s;
+  font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff;
+  padding:5px 12px;border-radius:10px;
+  background:linear-gradient(135deg,var(--red),var(--red3));
+  box-shadow:0 4px 12px rgba(192,57,43,0.32);transition:transform 0.25s;
 }
-.donor-card:hover .blood-pill{transform:scale(1.07)}
-.dist-badge{font-size:10px;font-weight:600;color:var(--text2);transition:color 0.5s}
+.donor-card:hover .blood-pill{transform:scale(1.08)}
+.dist-txt{font-size:10px;font-weight:600;color:var(--txt3);transition:color 0.45s}
 
 .dc-bottom{
-display:flex;align-items:center;justify-content:space-between;
-margin-top:13px;padding-top:12px;border-top:1px solid var(--border);
-transition:border-color 0.5s;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:13px;padding-top:12px;border-top:1px solid var(--bdr);transition:border-color 0.45s;
 }
-.dc-stats{display:flex;gap:16px}
-.stat-it{text-align:center}
-.stat-n{font-size:15px;font-weight:800;color:var(--text);font-family:'Playfair Display',serif;transition:color 0.5s}
-.stat-l{font-size:9px;color:var(--text3);font-weight:600;letter-spacing:0.5px;margin-top:1px;transition:color 0.5s}
+.dc-stats{display:flex;gap:18px}
+.stat{text-align:center}
+.stat-n{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--txt);transition:color 0.45s}
+.stat-l{font-size:9px;color:var(--txt3);font-weight:700;letter-spacing:0.6px;margin-top:1px;transition:color 0.45s}
 
 .call-btn{
-display:flex;align-items:center;gap:6px;
-background:linear-gradient(135deg,var(--red),var(--red3));
-color:#fff;border:none;border-radius:12px;padding:9px 16px;
-font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;
-transition:all 0.25s;box-shadow:0 4px 16px rgba(192,57,43,0.3);
-position:relative;overflow:hidden;
+  display:flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,var(--red),var(--red3));
+  color:#fff;border:none;border-radius:12px;padding:9px 16px;
+  font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:all 0.25s;box-shadow:0 4px 14px rgba(192,57,43,0.3);
 }
-.call-btn::after{
-content:'';position:absolute;inset:0;background:rgba(255,255,255,0);
-transition:background 0.2s;
-}
-.call-btn:hover{transform:scale(1.05);box-shadow:0 6px 22px rgba(192,57,43,0.5)}
-.call-btn:hover::after{background:rgba(255,255,255,0.1)}
-.call-btn:active{transform:scale(0.93)}
-.call-icon{font-size:14px;animation:ringShake 2.5s ease infinite}
-@keyframes ringShake{
-0%,90%,100%{transform:rotate(0)}
-93%{transform:rotate(-12deg)}
-96%{transform:rotate(12deg)}
-99%{transform:rotate(-6deg)}
-}
+.call-btn:hover{transform:scale(1.06);box-shadow:0 6px 22px rgba(192,57,43,0.48)}
+.call-btn:active{transform:scale(0.91)}
+.ph-ico{font-size:14px;animation:ringSh 3s ease-in-out infinite}
+@keyframes ringSh{0%,86%,100%{transform:rotate(0)}89%{transform:rotate(-14deg)}92%{transform:rotate(14deg)}95%{transform:rotate(-7deg)}}
 
-.empty-state{
-padding:48px 20px;text-align:center;
-animation:fadeUp 0.5s both;
+.bank-card{
+  background:var(--sur);border:1px solid var(--bdr);border-radius:20px;
+  padding:15px;margin:0 16px 12px;cursor:pointer;
+  transition:all 0.3s;position:relative;overflow:hidden;
+  animation:cardSlide 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
-.empty-icon{font-size:52px;margin-bottom:14px;display:block;animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.empty-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px;transition:color 0.5s}
-.empty-sub{font-size:13px;color:var(--text2);transition:color 0.5s}
+.bank-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(180deg,#1D4ED8,#3B82F6);
+  border-radius:20px 0 0 20px;transition:width 0.28s;
+}
+.bank-card:hover{transform:translateX(5px) translateY(-1px);border-color:var(--bdr2);box-shadow:0 10px 36px var(--shd)}
+.bank-card:hover::before{width:3px}
+.bank-card:active{transform:scale(0.97)}
+
+.bc-top{display:flex;align-items:flex-start;gap:13px}
+.bc-icon{
+  width:50px;height:50px;border-radius:16px;
+  background:var(--blue-bg);border:1px solid var(--blue-bdr);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+  transition:transform 0.3s,background 0.45s,border-color 0.45s;
+}
+.bank-card:hover .bc-icon{transform:scale(1.1) rotate(-4deg)}
+.bc-info{flex:1;min-width:0}
+.bc-name{font-size:13px;font-weight:700;color:var(--txt);line-height:1.35;transition:color 0.45s}
+.bc-addr{font-size:11px;color:var(--txt2);margin-top:3px;line-height:1.4;transition:color 0.45s}
+.bc-dist{font-size:11px;font-weight:700;color:var(--blue);margin-top:4px;transition:color 0.45s}
+.bc-status{
+  font-size:9px;font-weight:800;padding:2px 8px;border-radius:7px;
+  display:inline-block;margin-top:5px;letter-spacing:0.5px;
+}
+.open{background:rgba(34,197,94,0.09);color:#16a34a;border:1px solid rgba(34,197,94,0.2)}
+.closed{background:rgba(192,57,43,0.08);color:var(--red2);border:1px solid rgba(192,57,43,0.2)}
+[data-theme="dark"] .open{color:#4ade80;background:rgba(34,197,94,0.1)}
+
+.bc-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:12px;padding-top:11px;border-top:1px solid var(--bdr);transition:border-color 0.45s;
+}
+.bc-phone{font-size:12px;font-weight:600;color:var(--txt2);display:flex;align-items:center;gap:5px;transition:color 0.45s}
+.bank-call-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--blue-bg);color:var(--blue);
+  border:1px solid var(--blue-bdr);border-radius:11px;padding:8px 14px;
+  font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:all 0.25s;
+}
+.bank-call-btn:hover{background:rgba(29,78,216,0.14);transform:scale(1.06)}
+.bank-call-btn:active{transform:scale(0.91)}
+
+.loc-bar{padding:0 16px 16px;position:relative;z-index:1;animation:fadeUp 0.5s 0.2s both}
+.loc-wrap{
+  display:flex;align-items:center;gap:9px;
+  background:var(--sur);border:1.5px solid var(--bdr);border-radius:14px;
+  padding:11px 14px;transition:border 0.25s,background 0.45s;
+}
+.loc-wrap:focus-within{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(59,130,246,0.1)}
+.loc-ico{font-size:17px;opacity:0.5}
+.loc-inp{
+  flex:1;background:none;border:none;outline:none;
+  font-size:13px;font-family:'DM Sans',sans-serif;font-weight:600;
+  color:var(--txt);transition:color 0.45s;
+}
+.loc-inp::placeholder{color:var(--txt3)}
+.srch-btn{
+  background:linear-gradient(135deg,#1D4ED8,#3B82F6);color:#fff;border:none;
+  border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.22s;white-space:nowrap;
+  box-shadow:0 3px 12px rgba(29,78,216,0.28);
+}
+.srch-btn:hover{box-shadow:0 5px 18px rgba(29,78,216,0.42);transform:scale(1.04)}
+.srch-btn:active{transform:scale(0.92)}
+
+.no-result{text-align:center;padding:52px 20px;animation:fadeUp 0.4s both}
+.no-ico{font-size:52px;display:block;margin-bottom:14px;animation:flt 3s ease-in-out infinite}
+@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.no-t{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--txt);margin-bottom:6px;transition:color 0.45s}
+.no-s{font-size:13px;color:var(--txt2);transition:color 0.45s}
 
 .toast{
-position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
-background:linear-gradient(135deg,var(--red),var(--red3));
-color:#fff;padding:12px 22px;border-radius:14px;font-size:13px;font-weight:700;
-font-family:'Syne',sans-serif;z-index:9999;opacity:0;
-transition:all 0.4s cubic-bezier(0.22,1,0.36,1);white-space:nowrap;
-box-shadow:0 8px 30px rgba(192,57,43,0.5);
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(12px);
+  color:#fff;padding:11px 22px;border-radius:14px;
+  font-size:13px;font-weight:700;z-index:9999;opacity:0;
+  transition:all 0.38s cubic-bezier(0.22,1,0.36,1);white-space:nowrap;
+  font-family:'DM Sans',sans-serif;pointer-events:none;
 }
+.toast.emrg-toast{background:linear-gradient(135deg,var(--red),var(--red3));box-shadow:0 8px 28px rgba(192,57,43,0.45)}
+.toast.norm-toast{background:linear-gradient(135deg,#1D4ED8,#3B82F6);box-shadow:0 8px 28px rgba(29,78,216,0.38)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-.pb{height:28px}
+.panel{display:none}.panel.active{display:block}
+.panel-enter{animation:panelIn 0.42s cubic-bezier(0.22,1,0.36,1) both}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-
 <div class="grain"></div>
 <div class="orb orb1"></div>
 <div class="orb orb2"></div>
 
+<div class="frame">
+
 <header>
-<div class="back-btn" onclick="history.back()">←</div>
-<div class="header-center">
-<div class="header-title">Find Donors</div>
-<div class="header-sub"><span class="live-dot"></span>Live Network</div>
-</div>
-<div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
-<div class="tog-knob" id="togKnob">
-<span id="togIcon">🌙</span>
-</div>
-</div>
+  <div class="logo-row">
+    <div class="logo-drop">🩸</div>
+    <div class="logo-text">Rakta<b>Mitra</b></div>
+  </div>
+  <div class="tog-wrap">
+    <span class="tog-label" id="togLbl">☀ Day</span>
+    <div class="tog" onclick="toggleTheme()">
+      <div class="tok" id="tok">☀️</div>
+    </div>
+  </div>
 </header>
 
 <div class="hero">
-<div class="hero-label">Verified Donors</div>
-<div class="hero-title">Find your <em>lifesaver</em><br>in seconds</div>
-<div class="hero-count"><span class="live-dot"></span>248 donors active near Kolkata</div>
+  <div class="hero-eyebrow"><span class="hero-eyebrow-line"></span>Blood Assistance</div>
+  <div class="hero-title">Find help,<br><em>right now.</em></div>
+  <div class="hero-sub">Choose your situation below — we'll connect you with the right support instantly.</div>
 </div>
 
-<div class="search-wrap">
-<div class="search-box">
-<span class="search-icon">🔍</span>
-<input class="search-input" type="text" placeholder="Search by name, area…" id="searchInp" oninput="filterDonors()">
-<div class="filter-btn" onclick="showToast('Filters coming soon!')">⚙</div>
-</div>
+<div class="mode-toggle-bar">
+  <div class="mode-tab" id="tabEmrg" onclick="setMode('emergency')">🚨 Emergency</div>
+  <div class="mode-tab" id="tabNorm" onclick="setMode('normal')">🏥 Normal</div>
 </div>
 
-<div class="filter-chips">
-<div class="chip active" onclick="setFilter(this,'all')">All Types</div>
-<div class="chip" onclick="setFilter(this,'O+')">O+</div>
-<div class="chip" onclick="setFilter(this,'O-')">O−</div>
-<div class="chip" onclick="setFilter(this,'A+')">A+</div>
-<div class="chip" onclick="setFilter(this,'A-')">A−</div>
-<div class="chip" onclick="setFilter(this,'B+')">B+</div>
-<div class="chip" onclick="setFilter(this,'B-')">B−</div>
-<div class="chip" onclick="setFilter(this,'AB+')">AB+</div>
-<div class="chip" onclick="setFilter(this,'AB-')">AB−</div>
+<div class="warn-pill" id="warnPill"></div>
+
+<div id="panelEmrg" class="panel">
+  <div class="section-head">
+    <div class="sh-left">
+      <h3>Volunteer Donors</h3>
+      <p>10 contacts available now</p>
+    </div>
+    <span class="sh-badge emrg">🔴 LIVE</span>
+  </div>
+  <div class="content-area" id="donorList"></div>
 </div>
 
-<div class="section-row">
-<span class="sec-title" id="resultCount">10 donors found</span>
-<span class="sec-link" onclick="showToast('Sorted by distance!')">Sort ↕</span>
+<div id="panelNorm" class="panel">
+  <div class="loc-bar">
+    <div class="loc-wrap">
+      <span class="loc-ico">📍</span>
+      <input class="loc-inp" id="locInp" type="text" placeholder="Search area, e.g. Salt Lake, Garia…">
+      <button class="srch-btn" onclick="filterBanks()">Search</button>
+    </div>
+  </div>
+  <div class="section-head">
+    <div class="sh-left">
+      <h3>Nearby Blood Banks</h3>
+      <p id="bankCount">10 banks found in Kolkata</p>
+    </div>
+    <span class="sh-badge norm">🏥 Normal</span>
+  </div>
+  <div class="content-area" id="bankList"></div>
 </div>
 
-<div class="donors-grid" id="donorsGrid"></div>
+</div>
 
-<div class="pb"></div>
 <div class="toast" id="toast"></div>
 
 <script>
 var donors=[
-{name:"Nandini",blood:"O+",loc:"Salt Lake, Sector V",dist:"0.6 km",exp:"3 yrs",donations:8,online:true,avail:"Available",color:"linear-gradient(135deg,#C0392B,#E74C3C)",phone:"9674798678"},
-{name:"Laiba",blood:"A+",loc:"Park Street",dist:"1.2 km",exp:"2 yrs",donations:5,online:true,avail:"Available",color:"linear-gradient(135deg,#6C2B8E,#9B59B6)",phone:"7003642283"},
-{name:"Sanjana",blood:"B+",loc:"Behala, Kolkata",dist:"2.1 km",exp:"4 yrs",donations:12,online:false,avail:"Tomorrow",color:"linear-gradient(135deg,#0E5C3B,#27AE60)",phone:"9051014510"},
-{name:"Srinjay",blood:"AB+",loc:"Jadavpur, Kolkata",dist:"2.8 km",exp:"1 yr",donations:3,online:true,avail:"Available",color:"linear-gradient(135deg,#1A4A72,#2980B9)",phone:" 7596996577"},
-{name:"Ankita",blood:"O-",loc:"Dum Dum, Kolkata",dist:"3.4 km",exp:"5 yrs",donations:15,online:false,avail:"Available",color:"linear-gradient(135deg,#7D3200,#E67E22)",phone:"6290911588"},
-{name:"Tridha",blood:"A-",loc:"Ballygunge, Kolkata",dist:"3.9 km",exp:"2 yrs",donations:6,online:true,avail:"Available",color:"linear-gradient(135deg,#5B2A82,#A569BD)",phone:"8910346539"},
-{name:"Ria",blood:"B-",loc:"New Town, Action Area I",dist:"4.5 km",exp:"3 yrs",donations:9,online:true,avail:"Tomorrow",color:"linear-gradient(135deg,#1A5276,#1ABC9C)",phone:" 8697573439"},
-{name:"Sounak",blood:"O+",loc:"Kasba, Kolkata",dist:"5.1 km",exp:"6 yrs",donations:18,online:true,avail:"Available",color:"linear-gradient(135deg,#922B21,#E74C3C)",phone:"9064695868"},
-{name:"Rimi",blood:"AB-",loc:"Tollygunge, Kolkata",dist:"5.8 km",exp:"1 yr",donations:2,online:false,avail:"Weekend",color:"linear-gradient(135deg,#1E3A5F,#2471A3)",phone:"6289672724"},
-{name:"Barnali",blood:"A+",loc:"Shyambazar, Kolkata",dist:"6.3 km",exp:"4 yrs",donations:11,online:true,avail:"Available",color:"linear-gradient(135deg,#4A1942,#AF7AC5)",phone:"8910888943"}
+  {name:"Nandini",blood:"O+",loc:"Salt Lake, Sector V",dist:"0.6 km",exp:"3 yrs",donations:8,online:true,phone:"9831234567",color:"linear-gradient(135deg,#C0392B,#E74C3C)"},
+  {name:"Laiba",blood:"A+",loc:"Park Street",dist:"1.2 km",exp:"2 yrs",donations:5,online:true,phone:"9874563210",color:"linear-gradient(135deg,#6C2B8E,#9B59B6)"},
+  {name:"Sanjana",blood:"B+",loc:"Behala",dist:"2.1 km",exp:"4 yrs",donations:12,online:false,phone:"9123456780",color:"linear-gradient(135deg,#0E5C3B,#27AE60)"},
+  {name:"Srinjay",blood:"AB+",loc:"Jadavpur",dist:"2.8 km",exp:"1 yr",donations:3,online:true,phone:"7890123456",color:"linear-gradient(135deg,#1A4A72,#2980B9)"},
+  {name:"Ankita",blood:"O-",loc:"Dum Dum",dist:"3.4 km",exp:"5 yrs",donations:15,online:false,phone:"8765432109",color:"linear-gradient(135deg,#7D3200,#E67E22)"},
+  {name:"Tridha",blood:"A-",loc:"Ballygunge",dist:"3.9 km",exp:"2 yrs",donations:6,online:true,phone:"9632587410",color:"linear-gradient(135deg,#5B2A82,#A569BD)"},
+  {name:"Ria",blood:"B-",loc:"New Town, AA-I",dist:"4.5 km",exp:"3 yrs",donations:9,online:true,phone:"7412369850",color:"linear-gradient(135deg,#1A5276,#1ABC9C)"},
+  {name:"Sounak",blood:"O+",loc:"Kasba",dist:"5.1 km",exp:"6 yrs",donations:18,online:true,phone:"8523697410",color:"linear-gradient(135deg,#922B21,#E74C3C)"},
+  {name:"Rimi",blood:"AB-",loc:"Tollygunge",dist:"5.8 km",exp:"1 yr",donations:2,online:false,phone:"9874123650",color:"linear-gradient(135deg,#1E3A5F,#2471A3)"},
+  {name:"Barnali",blood:"A+",loc:"Shyambazar",dist:"6.3 km",exp:"4 yrs",donations:11,online:true,phone:"7896541230",color:"linear-gradient(135deg,#4A1942,#AF7AC5)"}
 ];
 
-var currentFilter="all";
+var banks=[
+  {name:"Regional Blood Transfusion Centre",addr:"Medical College, 88 College St",area:"college square",dist:"1.2 km",phone:"033-22123467",open:true},
+  {name:"SSKM Hospital Blood Bank",addr:"244 AJC Bose Rd, Bhowanipore",area:"sskm bhowanipore",dist:"2.8 km",phone:"033-22044440",open:true},
+  {name:"Calcutta Medical College Blood Bank",addr:"88 College St, College Square",area:"college square medical",dist:"1.4 km",phone:"033-22121575",open:false},
+  {name:"RN Tagore International Hospital",addr:"124 EM Bypass, Mukundapur",area:"mukundapur em bypass",dist:"5.4 km",phone:"033-66800000",open:true},
+  {name:"Salt Lake Blood Bank",addr:"Sector III, Bidhannagar",area:"salt lake bidhannagar sector",dist:"3.2 km",phone:"033-23370000",open:true},
+  {name:"Apollo Gleneagles Blood Bank",addr:"58 Canal Circular Rd, Kadapara",area:"kadapara canal circular",dist:"7.1 km",phone:"033-23201111",open:true},
+  {name:"Fortis Hospital Blood Bank",addr:"730 Anandapur, EM Bypass",area:"fortis anandapur em bypass",dist:"8.3 km",phone:"033-66284444",open:true},
+  {name:"Peerless Hospital Blood Bank",addr:"360 Pancha Sayar, Garia",area:"peerless garia",dist:"9.6 km",phone:"033-40114011",open:true},
+  {name:"Nil Ratan Sircar Medical College",addr:"138 AJC Bose Rd",area:"nil ratan ajc bose",dist:"2.1 km",phone:"033-22765200",open:false},
+  {name:"Park Clinic Blood Bank",addr:"4 Gorky Terrace, Elgin",area:"park clinic elgin",dist:"4.0 km",phone:"033-40404040",open:true}
+];
 
-function initials(n){return n.substring(0,2).toUpperCase()}
+var currentMode='';
 
-function renderDonors(list){
-var g=document.getElementById('donorsGrid');
-if(!list.length){
-g.innerHTML='<div class="empty-state"><span class="empty-icon">🩸</span><div class="empty-title">No donors found</div><div class="empty-sub">Try a different blood group or area</div></div>';
-document.getElementById('resultCount').textContent='0 donors found';
-return;
-}
-document.getElementById('resultCount').textContent=list.length+' donor'+(list.length!==1?'s':'')+' found';
-g.innerHTML=list.map(function(d,i){
-var avColor=d.avail==='Available'?'tag-don':d.avail==='Tomorrow'?'tag-avail':'tag-exp';
-return '<div class="donor-card" style="animation-delay:'+(i*0.05+0.05)+'s">'+
-'<div class="dc-top">'+
-'<div class="av-wrap">'+
-'<div class="av" style="background:'+d.color+'">'+initials(d.name)+'</div>'+
-'<div class="av-badge">'+d.blood.replace('+','＋').replace('-','−')+'</div>'+
-(d.online?'<div class="online-ring"></div>':'')+
-'</div>'+
-'<div class="dc-info">'+
-'<div class="dc-name">'+d.name+'</div>'+
-'<div class="dc-loc">📍 '+d.loc+'</div>'+
-'<div class="dc-tags">'+
-'<span class="tag tag-exp">'+d.exp+' exp</span>'+
-'<span class="tag '+avColor+'">'+d.avail+'</span>'+
-(d.online?'<span class="tag tag-don">Online</span>':'')+
-'</div>'+
-'</div>'+
-'<div class="dc-right">'+
-'<div class="blood-pill">'+d.blood+'</div>'+
-'<div class="dist-badge">'+d.dist+'</div>'+
-'</div>'+
-'</div>'+
-'<div class="dc-bottom">'+
-'<div class="dc-stats">'+
-'<div class="stat-it"><div class="stat-n">'+d.donations+'</div><div class="stat-l">DONATIONS</div></div>'+
-'<div class="stat-it"><div class="stat-n">'+d.exp+'</div><div class="stat-l">EXPERIENCE</div></div>'+
-'</div>'+
-'<button class="call-btn" onclick="callDonor(event,\''+d.phone+'\',\''+d.name+'\')"><span class="call-icon">📞</span> Call</button>'+
-'</div>'+
-'</div>';
-}).join('');
+function ini(n){return n.substring(0,2).toUpperCase()}
+
+function setMode(mode){
+  currentMode=mode;
+  var tabE=document.getElementById('tabEmrg');
+  var tabN=document.getElementById('tabNorm');
+  var pE=document.getElementById('panelEmrg');
+  var pN=document.getElementById('panelNorm');
+  var warn=document.getElementById('warnPill');
+
+  tabE.className='mode-tab';tabN.className='mode-tab';
+  pE.className='panel';pN.className='panel';
+
+  if(mode==='emergency'){
+    tabE.classList.add('active-emrg');
+    pE.classList.add('active','panel-enter');
+    warn.className='warn-pill emrg-warn';
+    warn.innerHTML='⚠️ Emergency mode directly contacts registered volunteer donors. Please use only for genuine medical emergencies.';
+    renderDonors();
+  } else {
+    tabN.classList.add('active-norm');
+    pN.classList.add('active','panel-enter');
+    warn.className='warn-pill norm-warn';
+    warn.innerHTML='🏥 Normal mode shows verified blood banks in and around Kolkata. Search by area to narrow results.';
+    renderBanks(banks);
+  }
 }
 
-function filterDonors(){
-var q=document.getElementById('searchInp').value.toLowerCase();
-var filtered=donors.filter(function(d){
-var matchBlood=currentFilter==='all'||d.blood===currentFilter;
-var matchSearch=!q||d.name.toLowerCase().includes(q)||d.loc.toLowerCase().includes(q)||d.blood.toLowerCase().includes(q);
-return matchBlood&&matchSearch;
-});
-renderDonors(filtered);
+function renderDonors(){
+  var html=donors.map(function(d,i){
+    return '<div class="donor-card" style="animation-delay:'+(i*0.055+0.02)+'s">'+
+      '<div class="dc-top">'+
+      '<div class="av-wrap">'+
+        '<div class="av" style="background:'+d.color+'">'+ini(d.name)+'</div>'+
+        '<div class="av-blood">'+d.blood+'</div>'+
+        (d.online?'<div class="online-ring"></div>':'')+
+      '</div>'+
+      '<div class="dc-info">'+
+        '<div class="dc-name">'+d.name+'</div>'+
+        '<div class="dc-loc">📍 '+d.loc+'</div>'+
+        '<div class="dc-tags">'+
+          '<span class="tag tag-r">'+d.exp+' exp</span>'+
+          '<span class="tag '+(d.online?'tag-g':'tag-y')+'">'+(d.online?'Online now':'Offline')+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="dc-right">'+
+        '<div class="blood-pill">'+d.blood+'</div>'+
+        '<div class="dist-txt">'+d.dist+'</div>'+
+      '</div></div>'+
+      '<div class="dc-bottom">'+
+        '<div class="dc-stats">'+
+          '<div class="stat"><div class="stat-n">'+d.donations+'</div><div class="stat-l">DONATIONS</div></div>'+
+          '<div class="stat"><div class="stat-n">'+d.exp+'</div><div class="stat-l">EXPERIENCE</div></div>'+
+        '</div>'+
+        '<button class="call-btn" onclick="callPerson(event,\''+d.phone+'\',\''+d.name+'\',\'emrg\')"><span class="ph-ico">📞</span> Call</button>'+
+      '</div></div>';
+  }).join('');
+  document.getElementById('donorList').innerHTML=html;
 }
 
-function setFilter(el,val){
-document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('active')});
-el.classList.add('active');
-currentFilter=val;
-filterDonors();
+function renderBanks(list){
+  document.getElementById('bankCount').textContent=list.length+' bank'+(list.length!==1?'s':'')+' found in Kolkata';
+  if(!list.length){
+    document.getElementById('bankList').innerHTML='<div class="no-result"><span class="no-ico">🏥</span><div class="no-t">No banks found</div><div class="no-s">Try a broader area name</div></div>';
+    return;
+  }
+  document.getElementById('bankList').innerHTML=list.map(function(b,i){
+    return '<div class="bank-card" style="animation-delay:'+(i*0.055+0.02)+'s">'+
+      '<div class="bc-top">'+
+        '<div class="bc-icon">🏥</div>'+
+        '<div class="bc-info">'+
+          '<div class="bc-name">'+b.name+'</div>'+
+          '<div class="bc-addr">'+b.addr+'</div>'+
+          '<div class="bc-dist">📍 '+b.dist+' away</div>'+
+          '<span class="bc-status '+(b.open?'open':'closed')+'">'+(b.open?'● Open Now':'● Closed')+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="bc-bottom">'+
+        '<div class="bc-phone">📞 '+b.phone+'</div>'+
+        '<button class="bank-call-btn" onclick="callPerson(event,\''+b.phone.replace(/-/g,'')+'\',\''+b.name+'\',\'norm\')"><span class="ph-ico">📞</span> Call</button>'+
+      '</div></div>';
+  }).join('');
 }
 
-function callDonor(e,phone,name){
-e.stopPropagation();
-showToast('Calling '+name+'…');
-setTimeout(function(){window.location.href='tel:+91'+phone},700);
+function filterBanks(){
+  var q=document.getElementById('locInp').value.toLowerCase().trim();
+  if(!q){renderBanks(banks);return}
+  var filtered=banks.filter(function(b){
+    return b.name.toLowerCase().includes(q)||b.addr.toLowerCase().includes(q)||b.area.toLowerCase().includes(q);
+  });
+  renderBanks(filtered);
 }
 
-function showToast(msg){
-var t=document.getElementById('toast');
-t.textContent=msg;t.classList.add('show');
-setTimeout(function(){t.classList.remove('show')},2400);
+document.getElementById('locInp').addEventListener('keydown',function(e){if(e.key==='Enter')filterBanks()});
+
+function callPerson(e,phone,name,type){
+  e.stopPropagation();
+  var t=document.getElementById('toast');
+  t.className='toast '+(type==='emrg'?'emrg-toast':'norm-toast');
+  t.textContent='📞 Calling '+name+'…';
+  t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt=setTimeout(function(){t.classList.remove('show')},2400);
+  setTimeout(function(){window.location.href='tel:+91'+phone.replace(/[^0-9]/g,'')},700);
 }
 
 function toggleTheme(){
-var html=document.documentElement;
-var isDark=html.getAttribute('data-theme')==='dark';
-html.setAttribute('data-theme',isDark?'light':'dark');
-document.getElementById('togIcon').textContent=isDark?'☀️':'🌙';
-var orb1=document.querySelector('.orb1');
-var orb2=document.querySelector('.orb2');
-if(!isDark){
-orb1.style.opacity='0.4';orb2.style.opacity='0.4';
-}else{
-orb1.style.opacity='1';orb2.style.opacity='1';
-}
+  var html=document.documentElement;
+  var isLight=html.getAttribute('data-theme')==='light';
+  html.setAttribute('data-theme',isLight?'dark':'light');
+  document.getElementById('tok').textContent=isLight?'🌙':'☀️';
+  document.getElementById('togLbl').textContent=isLight?'🌙 Night':'☀ Day';
 }
 
-renderDonors(donors);
+setMode('emergency');
 </script>
 </body>
 </html>
