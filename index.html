@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RaktaMitra - Cinematic Medical Animation (Fast)</title>
+    <title>RaktaMitra - Blood Network</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
     <style>
         :root {
-            --royal-blue: #0055ff;
-            --royal-light: #80aaff;
-            --neon-white: #ffffff;
-            --dark-bg: #00020a;
-            --black: #000000;
+            --blood-dark: #0a0002;
+            --blood-red: #c10015;
+            --text-light: #fef2f2;
         }
 
         body, html {
@@ -20,9 +21,9 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--black);
-            overflow: hidden;
+            background-color: var(--blood-dark);
             font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
             touch-action: none;
         }
 
@@ -33,549 +34,316 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            background: radial-gradient(circle at center, #050814 0%, var(--black) 100%);
-        }
-
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            pointer-events: none;
-        }
-
-        .top-section {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-
-        .bottom-section {
-            position: absolute;
-            top: 80%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .icon-container {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .drop-icon, .cross-icon {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            fill: transparent;
-            stroke-width: 2;
-            opacity: 0;
-            transform: scale(0) rotate(0deg);
-            /* SPED UP: Reduced from 1s to 0.6s */
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-
-        .drop-icon {
-            stroke: var(--royal-blue);
-            filter: drop-shadow(0 0 5px var(--royal-blue));
-        }
-        
-        .cross-icon {
-            stroke: var(--neon-white);
-            filter: drop-shadow(0 0 5px var(--neon-white));
-            /* SPED UP: Reduced from 1.5s to 1s */
-            animation: heartbeat 1s infinite ease-in-out;
-        }
-
-        .brand-text {
-            position: relative;
-            z-index: 101;
-            font-size: 4rem;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-align: center;
-            background: linear-gradient(to right, #ffffff 0%, var(--royal-light) 50%, var(--royal-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: none;
-            opacity: 0;
-            transform: scale(0.8) translateY(20px);
-            /* FASTER TEXT REVEAL: Reduced from 0.8s to 0.4s */
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
-        }
-
-        .subtitle {
-            position: relative;
-            z-index: 101;
-            font-size: 1rem;
-            font-weight: 400;
-            letter-spacing: 6px;
-            color: #ffffff;
-            text-align: center;
-            line-height: 1.6;
-            text-transform: uppercase;
-            text-shadow: none;
-            opacity: 0;
-            transform: scale(0.8) translateY(10px);
-            /* FASTER TEXT REVEAL: Reduced from 0.8s to 0.4s, delay reduced to 0.1s */
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
-        }
-
-        .ui-state-reveal .drop-icon {
-            opacity: 1;
-            transform: scale(1) rotate(0deg);
-            fill: rgba(0, 85, 255, 0.1);
-        }
-        .ui-state-reveal .brand-text, .ui-state-reveal .subtitle {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-
-        .ui-state-morph1 .drop-icon {
-            opacity: 0;
-            transform: scale(0.2) rotate(180deg);
-        }
-        .ui-state-morph1 .cross-icon {
-            opacity: 1;
-            transform: scale(1) rotate(360deg);
-            fill: rgba(255, 255, 255, 0.1);
-        }
-        .ui-state-morph1 .brand-text, .ui-state-morph1 .subtitle {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-
-        .ui-state-close .drop-icon, .ui-state-close .cross-icon {
-            opacity: 0;
-            transform: scale(0.2) rotate(-90deg);
-            /* SPED UP: Reduced from 0.8s to 0.5s */
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .ui-state-close .brand-text, .ui-state-close .subtitle {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-
-        /* 4. WELCOME STATE (Show branding and button) */
-        .ui-state-welcome .brand-text, .ui-state-welcome .subtitle {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-        }
-        .ui-state-welcome .welcome-btn {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-            pointer-events: auto;
-        }
-        .ui-state-welcome .drop-icon, .ui-state-welcome .cross-icon {
-            opacity: 0;
-            transform: scale(0.2) rotate(-90deg);
-        }
-
-        .welcome-btn {
-            padding: 14px 45px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--neon-white);
-            background: rgba(0, 85, 255, 0.1);
-            border: 2px solid var(--royal-blue);
-            border-radius: 30px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            box-shadow: 0 0 15px rgba(0, 85, 255, 0.4), inset 0 0 10px rgba(0, 85, 255, 0.2);
-            opacity: 0;
-            transform: scale(0.8) translateY(20px);
-            /* SPED UP: Reduced from 1.2s to 0.8s */
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
-            pointer-events: none;
-            backdrop-filter: blur(5px);
-        }
-
-        .welcome-btn:hover {
-            background: var(--royal-blue);
-            box-shadow: 0 0 25px rgba(0, 85, 255, 0.8), inset 0 0 15px rgba(0, 85, 255, 0.4);
-            transform: scale(1.05) translateY(0);
-            transition: all 0.3s ease;
-        }
-
-        @keyframes heartbeat {
-            0% { transform: scale(1); filter: drop-shadow(0 0 5px var(--neon-white)); }
-            10% { transform: scale(1.1); filter: drop-shadow(0 0 15px var(--neon-white)); }
-            20% { transform: scale(1); filter: drop-shadow(0 0 5px var(--neon-white)); }
-            30% { transform: scale(1.05); filter: drop-shadow(0 0 10px var(--neon-white)); }
-            40% { transform: scale(1); filter: drop-shadow(0 0 5px var(--neon-white)); }
-            100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--neon-white)); }
         }
 
         .vignette {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            box-shadow: inset 0 0 150px rgba(0, 5, 20, 0.9);
-            z-index: 5;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 30%, rgba(5, 0, 1, 0.95) 100%);
+            z-index: 2;
             pointer-events: none;
         }
 
-        @media (min-width: 768px) {
-            body { display: flex; justify-content: center; align-items: center; background-color: #000; }
-            #app-container {
-                position: relative; width: 400px; height: 711px;
-                border-radius: 20px; overflow: hidden; box-shadow: 0 0 50px rgba(0,85,255,0.2);
-            }
+        .ui-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
         }
-        @media (max-width: 767px) {
-            #app-container { position: relative; width: 100%; height: 100%; }
-            .brand-text { font-size: 3rem; }
-            .subtitle { font-size: 0.8rem; letter-spacing: 4px; }
+
+        .brand-container {
+            text-align: center;
+            transform: translateY(20px);
+            opacity: 0;
+            width: 100%;
+            padding: 0 1.5rem;
+            box-sizing: border-box;
+        }
+
+        .brand-text {
+            font-size: clamp(2rem, 8vw, 5.5rem);
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            color: var(--text-light);
+            margin: 0;
+            text-shadow: 0 10px 30px rgba(193, 0, 21, 0.5);
+            text-transform: uppercase;
+            word-break: keep-all;
+        }
+
+        .subtitle {
+            font-size: clamp(0.75rem, 2.5vw, 1.2rem);
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: #ffb3b8;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .enter-btn {
+            margin-top: 4rem;
+            padding: 1rem 3.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.15em;
+            color: white;
+            background: rgba(193, 0, 21, 0.1);
+            border: 1px solid rgba(193, 0, 21, 0.6);
+            border-radius: 50px;
+            cursor: pointer;
+            pointer-events: auto;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(193, 0, 21, 0.2);
+        }
+
+        .enter-btn:hover {
+            background: rgba(193, 0, 21, 0.3);
+            border-color: #ff1a35;
+            box-shadow: 0 0 30px rgba(193, 0, 21, 0.5), inset 0 0 15px rgba(193, 0, 21, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .icon-complex {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+        }
+
+        .ring-outer {
+            transform-origin: 50px 50px;
+            animation: spinRight 12s linear infinite;
+        }
+
+        .center-drop {
+            transform-origin: 50px 62px;
+            animation: pulseDrop 1.2s ease-in-out infinite;
+        }
+
+        @keyframes spinRight {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulseDrop {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(193, 0, 21, 0.5)); }
+            15% { transform: scale(1.15); filter: drop-shadow(0 0 15px rgba(255, 26, 53, 0.8)); }
+            30% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(193, 0, 21, 0.5)); }
+            45% { transform: scale(1.15); filter: drop-shadow(0 0 15px rgba(255, 26, 53, 0.8)); }
         }
     </style>
 </head>
 <body>
 
-<div id="app-container">
-    <div id="canvas-container">
-        <canvas id="ecgCanvas"></canvas>
-    </div>
+    <div id="canvas-container"></div>
     <div class="vignette"></div>
     
-    <div id="ui-layer">
-        <div class="top-section">
-            <div class="icon-container">
-                <svg class="drop-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.5c-3.3 0-6-2.7-6-6 0-3.5 6-10.5 6-10.5s6 7 6 10.5c0 3.3-2.7 6-6 6z"/>
-                </svg>
-                <svg class="cross-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5v4H5v6h4v4h6v-4h4V9h-4V5H9z"/>
-                </svg>
-            </div>
+    <div class="ui-layer">
+        <div class="icon-complex">
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <circle class="ring-outer" cx="50" cy="50" r="46" fill="none" stroke="rgba(255, 179, 184, 0.4)" stroke-width="2" stroke-dasharray="8 6" />
+                <path class="center-drop" d="M50 32 C50 32, 36 52, 36 64 C36 71.7, 42.3 78, 50 78 C57.7 78, 64 71.7, 64 64 C64 52, 50 32, 50 32 Z" fill="#c10015" />
+            </svg>
+        </div>
+        
+        <div class="brand-container">
             <h1 class="brand-text">RaktaMitra</h1>
-            <p class="subtitle mt-4">A Friend In Every Drop</p>
+            <p class="subtitle">Blood Donor Network</p>
         </div>
-        <div class="bottom-section">
-            <button id="welcome-btn" class="welcome-btn" onclick="window.location.href='home.html'">Welcome</button>
-        </div>
+        <button class="enter-btn" onclick="initiateEntry()">Connect</button>
     </div>
-</div>
 
-<script>
-    const canvas = document.getElementById('ecgCanvas');
-    const ctx = canvas.getContext('2d');
-    let width, height;
-    
-    let splitOffset = 0; 
-    let targetSplitOffset = 0;
-    
-    let lineOpacity = 1;
-    let targetLineOpacity = 1;
-
-    let time = 0;
-    const points = [];
-    let maxPoints = 300; 
-    
-    let baseY = 0;
-
-    function initECG() {
-        if (points.length > 0) return; 
-
-        // SPED UP: Increased spacing to match faster horizontal movement
-        const spacing = 6;
-        maxPoints = Math.ceil(width / spacing) + 50; 
+    <script>
+        let scene, camera, renderer;
+        let cells = [];
+        let bloodFlowSpeed = 1;
+        const clock = new THREE.Clock();
         
-        for (let x = width; x >= -200; x -= spacing) {
-            points.unshift({ x: x, yOffset: 0, isPeak: false });
-        }
-    }
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
 
-    function resize() {
-        const container = document.getElementById('canvas-container');
-        width = container.clientWidth;
-        height = container.clientHeight;
-        canvas.width = width * window.devicePixelRatio;
-        canvas.height = height * window.devicePixelRatio;
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        
-        // Responsive placement: Center on mobile (<=767px), lower on larger screens
-        baseY = width <= 767 ? height * 0.5 : height * 0.65;
-        initECG();
-    }
-    
-    window.addEventListener('resize', resize);
-    resize();
+        function init3D() {
+            const container = document.getElementById('canvas-container');
 
-    const particles = [];
-    for (let i = 0; i < 80; i++) {
-        const isWhite = Math.random() > 0.5;
-        particles.push({
-            x: Math.random() * 1000,
-            y: Math.random() * 1000,
-            size: Math.random() * 2.5 + 0.5,
-            // SPED UP: Particles move slightly faster
-            speedY: -(Math.random() * 1.5 + 0.5), 
-            speedX: (Math.random() - 0.5) * 0.8,
-            opacity: Math.random() * 0.5 + 0.1,
-            color: isWhite 
-                ? `rgba(255, 255, 255, ` 
-                : `rgba(0, 85, 255, `,
-            isWhite: isWhite
-        });
-    }
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0a0002, 0.025);
 
-    const beatPattern = [
-        [0, 0],       
-        [10, -5],     
-        [20, 0],
-        [25, 0],      
-        [30, 15],     
-        [35, -120],
-        [40, 30],     
-        [45, 0],      
-        [60, -15],    
-        [75, 0],
-        [100, 0]      
-    ];
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
+            camera.position.z = 30;
 
-    let isBeating = false;
-    let beatProgress = 0;
-    let peakPointTagged = false;
-    let animationStage = 0;
-    
-    // SPED UP: Start normal speed sooner (1000ms instead of 1500ms)
-    setTimeout(() => { animationStage = 1; }, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
 
-    function addECGPoint() {
-        let x = width; 
-        let yOffset = 0;
-        let isCurrentPeak = false;
+            scene.add(new THREE.AmbientLight(0x2a0005, 0.8));
 
-        for (let i = 0; i < points.length; i++) {
-            // SPED UP: Line moves left faster (6 instead of 4)
-            points[i].x -= 6; 
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            dirLight.position.set(0, 20, 10);
+            scene.add(dirLight);
+
+            const rimLight = new THREE.SpotLight(0xffffff, 4);
+            rimLight.position.set(0, 0, -40);
+            rimLight.lookAt(0, 0, 0);
+            scene.add(rimLight);
+
+            scene.add(new THREE.PointLight(0x8a0010, 5, 50));
+
+            createBloodCells();
+
+            window.addEventListener('resize', onWindowResize, false);
+            document.addEventListener('mousemove', onMouseMove, false);
+            document.addEventListener('touchmove', onTouchMove, { passive: false });
+
+            gsap.to(".icon-complex", { opacity: 1, y: 10, duration: 1.5, delay: 0.5, ease: "power2.out" });
+            gsap.to(".brand-container", { opacity: 1, y: 0, duration: 1.5, delay: 0.8, ease: "power3.out" });
+            gsap.to(".enter-btn", { opacity: 1, y: 0, duration: 1, delay: 1.5, ease: "back.out(1.5)" });
         }
 
-        if (isBeating) {
-            let prevNode = beatPattern[0];
-            let nextNode = beatPattern[beatPattern.length - 1];
+        function createBloodCells() {
+            const geometry = new THREE.SphereGeometry(1.2, 32, 32);
+            const positions = geometry.attributes.position;
             
-            for (let i = 0; i < beatPattern.length - 1; i++) {
-                if (beatProgress >= beatPattern[i][0] && beatProgress <= beatPattern[i+1][0]) {
-                    prevNode = beatPattern[i];
-                    nextNode = beatPattern[i+1];
-                    break;
-                }
-            }
-
-            const segmentProgress = (beatProgress - prevNode[0]) / (nextNode[0] - prevNode[0]);
-            yOffset = prevNode[1] + (nextNode[1] - prevNode[1]) * segmentProgress;
-            
-            if (beatProgress >= 35 && !peakPointTagged) {
-                isCurrentPeak = true;
-                peakPointTagged = true;
-            }
-
-            yOffset *= (animationStage === 1 ? 2.2 : 1);
-            // SPED UP: Heartbeat draws faster (4 instead of 2.5)
-            beatProgress += 4;
-
-            if (beatProgress >= beatPattern[beatPattern.length - 1][0]) {
-                isBeating = false;
-                beatProgress = 0;
-            }
-        } else {
-            yOffset = Math.sin(time * 0.1) * 2;
-            
-            if ((animationStage === 0 || animationStage === 4 || animationStage === 5) && Math.random() < 0.01) {
-                isBeating = true;
-                peakPointTagged = false;
-                beatProgress = 0;
-            }
-        }
-
-        points.push({ x: x, yOffset: yOffset, isPeak: isCurrentPeak });
-
-        if (points.length > maxPoints) points.shift();
-    }
-
-    const explosionParticles = [];
-    function triggerReveal() {
-        const uiLayer = document.getElementById('ui-layer');
-        
-        // 1. Reveal State (Lines fade out, Text + Drop show)
-        uiLayer.className = 'ui-state-reveal';
-        targetSplitOffset = height * 0.28; 
-        targetLineOpacity = 0;
-        animationStage = 2;
-        
-        for(let i=0; i<50; i++) {
-            const isWhite = Math.random() > 0.5;
-            explosionParticles.push({
-                x: width/2,
-                y: baseY, 
-                // SPED UP: Explosion velocity increased (25 vs 18)
-                vx: (Math.random() - 0.5) * 25,
-                vy: (Math.random() - 0.5) * 25,
-                life: 1.0,
-                color: isWhite ? `hsl(0, 0%, ${60 + Math.random()*40}%)` : `hsl(220, 100%, ${50 + Math.random()*20}%)`
-            });
-        }
-
-        // SPED UP ALL TIMEOUTS:
-        
-        // 2. Morph State (Drop becomes Cross) - 1.5s instead of 2.5s
-        setTimeout(() => {
-            uiLayer.className = 'ui-state-morph1';
-            animationStage = 3;
-        }, 1500);
-
-        // 3. Close State (Cross hides, text stays, lines fade back in and merge) - 3s instead of 5s
-        setTimeout(() => {
-            uiLayer.className = 'ui-state-close';
-            targetSplitOffset = 0;
-            targetLineOpacity = 1;
-            animationStage = 4;
-        }, 3000);
-
-        // 4. Welcome State (Lines are merged, show the button) - 4s instead of 6.5s
-        setTimeout(() => {
-            uiLayer.className = 'ui-state-welcome';
-            animationStage = 5; 
-        }, 4000);
-    }
-
-    function drawECG() {
-        if (points.length < 2 || lineOpacity < 0.01) return;
-
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.globalAlpha = lineOpacity;
-        
-        const drawLine = (yShift, colorObj) => {
-            const passes = [
-                { width: 6, color: `rgba(${colorObj.rgb}, 0.5)`, blur: 5 },
-                { width: 2, color: '#ffffff', blur: 0 }
-            ];
-
-            passes.forEach(pass => {
-                ctx.beginPath();
-                ctx.moveTo(points[0].x, baseY + yShift + points[0].yOffset);
+            for (let i = 0; i < positions.count; i++) {
+                const x = positions.getX(i);
+                const y = positions.getY(i);
+                let z = positions.getZ(i);
                 
-                for (let i = 1; i < points.length; i++) {
-                    const xc = (points[i].x + points[i-1].x) / 2;
-                    const yc = baseY + yShift + (points[i].yOffset + points[i-1].yOffset) / 2;
-                    ctx.quadraticCurveTo(points[i-1].x, baseY + yShift + points[i-1].yOffset, xc, yc);
-                }
-                ctx.lineTo(points[points.length-1].x, baseY + yShift + points[points.length-1].yOffset);
-
-                ctx.lineWidth = pass.width;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.shadowBlur = pass.blur;
-                ctx.shadowColor = pass.blur > 0 ? colorObj.hex : 'transparent';
+                const dist = Math.sqrt(x*x + y*y);
+                const thickness = 0.25 + 0.75 * Math.sin((dist / 1.2) * (Math.PI / 2));
                 
-                const gradient = ctx.createLinearGradient(0, 0, width, 0);
-                gradient.addColorStop(0, 'rgba(255,255,255,0)');
-                gradient.addColorStop(0.15, pass.color);
-                gradient.addColorStop(1, pass.color);
-                ctx.strokeStyle = gradient;
+                positions.setZ(i, z * 0.4 * thickness);
+            }
+            geometry.computeVertexNormals();
 
-                ctx.stroke();
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x8a0314,
+                roughness: 0.9,
+                metalness: 0.1,
+                flatShading: false
             });
+
+            for (let i = 0; i < 150; i++) {
+                const cell = new THREE.Mesh(geometry, material);
+                
+                resetCellPosition(cell);
+                cell.position.z = (Math.random() - 0.5) * 80;
+
+                cell.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+
+                cell.userData = {
+                    rotSpeedX: (Math.random() - 0.5) * 0.02,
+                    rotSpeedY: (Math.random() - 0.5) * 0.02,
+                    rotSpeedZ: (Math.random() - 0.5) * 0.02,
+                    driftX: (Math.random() - 0.5) * 0.05,
+                    driftY: (Math.random() - 0.5) * 0.05,
+                    baseScale: Math.random() * 0.5 + 0.7
+                };
+                
+                cell.scale.setScalar(cell.userData.baseScale);
+                cells.push(cell);
+                scene.add(cell);
+            }
+        }
+
+        function resetCellPosition(cell) {
+            const radius = 25;
+            const r = radius * Math.sqrt(Math.random());
+            const theta = Math.random() * 2 * Math.PI;
+            
+            cell.position.x = r * Math.cos(theta);
+            cell.position.y = r * Math.sin(theta);
+            cell.position.z = -40 - (Math.random() * 20);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(event) {
+            mouseX = (event.clientX - window.innerWidth / 2) * 0.02;
+            mouseY = (event.clientY - window.innerHeight / 2) * 0.02;
+        }
+
+        function onTouchMove(event) {
+            if (event.touches.length > 0) {
+                mouseX = (event.touches[0].clientX - window.innerWidth / 2) * 0.03;
+                mouseY = (event.touches[0].clientY - window.innerHeight / 2) * 0.03;
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+
+            const beatTime = time * 1.5; 
+            const pulse = Math.pow(Math.sin(beatTime * Math.PI), 16) * 0.3;
+
+            const currentFlowSpeed = 0.15 + (pulse * 0.3) * bloodFlowSpeed;
+
+            cells.forEach(cell => {
+                cell.position.z += currentFlowSpeed;
+                
+                cell.position.x += cell.userData.driftX;
+                cell.position.y += cell.userData.driftY;
+
+                cell.rotation.x += cell.userData.rotSpeedX;
+                cell.rotation.y += cell.userData.rotSpeedY;
+                cell.rotation.z += cell.userData.rotSpeedZ;
+
+                const dynamicScale = cell.userData.baseScale + (pulse * 0.1);
+                cell.scale.setScalar(dynamicScale);
+
+                if (cell.position.z > 15) {
+                    resetCellPosition(cell);
+                }
+            });
+
+            targetX = mouseX;
+            targetY = mouseY;
+            camera.position.x += (targetX - camera.position.x) * 0.05;
+            camera.position.y += (-targetY - camera.position.y) * 0.05;
+            camera.lookAt(0, 0, 0);
+
+            renderer.render(scene, camera);
+        }
+
+        function initiateEntry() {
+            const btn = document.querySelector('.enter-btn');
+            btn.style.pointerEvents = 'none';
+            gsap.to(btn, { opacity: 0, y: 20, duration: 0.3 });
+            gsap.to(".brand-container", { opacity: 0, y: -20, duration: 0.5, delay: 0.1 });
+            gsap.to(".icon-complex", { opacity: 0, scale: 0.5, duration: 0.5 });
+
+            bloodFlowSpeed = 8;
+
+            gsap.to(camera.position, {
+                z: -10,
+                duration: 1.5,
+                ease: "power2.in"
+            });
+
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 1500);
+        }
+
+        window.onload = function() {
+            init3D();
+            animate();
         };
-
-        if (splitOffset < 1) {
-            drawLine(0, { rgb: '0, 85, 255', hex: '#0055ff' });
-        } else {
-            drawLine(-splitOffset, { rgb: '255, 255, 255', hex: '#ffffff' });
-            drawLine(splitOffset, { rgb: '0, 85, 255', hex: '#0055ff' });
-        }
-        
-        ctx.globalAlpha = 1.0;
-        ctx.globalCompositeOperation = 'source-over';
-    }
-
-    function drawExplosion() {
-        for(let i = explosionParticles.length - 1; i >= 0; i--) {
-            let p = explosionParticles[i];
-            p.x += p.vx;
-            p.y += p.vy;
-            // SPED UP: Explosion fades faster (0.035 vs 0.02)
-            p.life -= 0.035; 
-            
-            if(p.life <= 0) {
-                explosionParticles.splice(i, 1);
-                continue;
-            }
-            
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, Math.max(0, p.life * 5), 0, Math.PI*2);
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = Math.max(0, p.life);
-            ctx.fill();
-        }
-        ctx.globalAlpha = 1.0;
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, width, height);
-        time++;
-
-        // SPED UP: Faster split and fade lerps (0.1 instead of 0.05)
-        splitOffset += (targetSplitOffset - splitOffset) * 0.1; 
-        lineOpacity += (targetLineOpacity - lineOpacity) * 0.1; 
-
-        if (animationStage === 1 && !isBeating && targetSplitOffset === 0) {
-            isBeating = true;
-            peakPointTagged = false;
-            beatProgress = 0;
-        }
-
-        addECGPoint();
-
-        const peakIndex = points.findIndex(p => p.isPeak);
-        if (peakIndex !== -1) {
-            if (points[peakIndex].x <= width / 2 && animationStage === 1) {
-                points[peakIndex].isPeak = false;
-                triggerReveal();
-            } else if (points[peakIndex].x < -50) {
-                points[peakIndex].isPeak = false; 
-            }
-        }
-
-        particles.forEach(p => {
-            p.y += p.speedY;
-            p.x += p.speedX;
-            if (p.y < -10) {
-                p.y = height + 10;
-                p.x = Math.random() * width;
-            }
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = p.color + p.opacity + ')';
-            ctx.fill();
-        });
-
-        drawECG();
-        if(explosionParticles.length > 0) drawExplosion();
-
-        requestAnimationFrame(animate);
-    }
-
-    animate();
-
-</script>
+    </script>
 </body>
 </html>
