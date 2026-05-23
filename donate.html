@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaktaMitra - Donate</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #D32F2F;
+    --red-light: #FFEBEE;
+    --red-mid: #EF5350;
+    --bg: #F5F5F5;
+    --surface: #FFFFFF;
+    --surface2: #F0F0F0;
+    --text: #1A1A1A;
+    --text2: #555555;
+    --text3: #888888;
+    --border: #E0E0E0;
+    --nav-bg: #FFFFFF;
+    --badge-bg: #FFEBEE;
+    --badge-text: #C62828;
+    --tag-bg: #F0F0F0;
+    --tag-text: #444444;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  [data-theme="dark"] {
+    --bg: #121212;
+    --surface: #1E1E1E;
+    --surface2: #2A2A2A;
+    --text: #F0F0F0;
+    --text2: #AAAAAA;
+    --text3: #777777;
+    --border: #333333;
+    --nav-bg: #1A1A1A;
+    --badge-bg: #3D1010;
+    --badge-text: #FF8A80;
+    --tag-bg: #2A2A2A;
+    --tag-text: #CCCCCC;
+    --shadow: 0 2px 12px rgba(0,0,0,0.4);
+    --red-light: #2D1010;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* TOP NAV */
+  .top-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--nav-bg);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.3s, border-color 0.3s;
+    box-shadow: var(--shadow);
+  }
+  .top-nav-left { display: flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 28px; height: 28px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .logo-dot svg { width: 14px; height: 14px; fill: white; }
+  .brand-name { font-size: 17px; font-weight: 800; color: var(--red); letter-spacing: -0.3px; }
+  .top-nav-right { display: flex; align-items: center; gap: 12px; }
+  .icon-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--surface2);
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text); font-size: 16px; transition: background 0.2s;
+    position: relative;
+  }
+  .icon-btn:hover { background: var(--border); }
+  .notif-badge {
+    position: absolute; top: -2px; right: -2px;
+    width: 16px; height: 16px; background: var(--red);
+    border-radius: 50%; font-size: 9px; font-weight: 700;
+    color: white; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* TOGGLE */
+  .toggle-wrap { display: flex; align-items: center; gap: 6px; }
+  .toggle {
+    width: 44px; height: 24px; background: var(--surface2);
+    border-radius: 12px; border: 1px solid var(--border);
+    position: relative; cursor: pointer; transition: background 0.3s;
+  }
+  .toggle.on { background: var(--red); border-color: var(--red); }
+  .toggle-knob {
+    width: 18px; height: 18px; background: white;
+    border-radius: 50%; position: absolute; top: 2px; left: 2px;
+    transition: left 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+  .toggle.on .toggle-knob { left: 22px; }
+  .toggle-label { font-size: 12px; color: var(--text3); font-weight: 600; }
+
+  /* CONTENT */
+  .content {
+    padding: 0 0 80px;
+  }
+
+  /* HERO BANNER */
+  .hero {
+    margin: 16px 16px 0;
+    background: linear-gradient(135deg, #C62828 0%, #E53935 60%, #EF5350 100%);
+    border-radius: 18px;
+    padding: 22px 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    right: -20px; top: -20px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: 20px; bottom: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+  }
+  .hero-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .hero-sub { font-size: 13px; opacity: 0.88; margin-bottom: 14px; line-height: 1.4; }
+  .hero-stat { font-size: 13px; background: rgba(255,255,255,0.2); display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+
+  /* SECTION */
+  .section { padding: 20px 16px 0; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .section-title { font-size: 16px; font-weight: 800; color: var(--text); }
+  .view-all { font-size: 13px; color: var(--red); font-weight: 700; cursor: pointer; }
+
+  /* FILTER TABS */
+  .filter-tabs { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 2px; }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700;
+    cursor: pointer; white-space: nowrap; border: 1.5px solid var(--border);
+    background: var(--surface2); color: var(--text2); transition: all 0.2s;
+  }
+  .tab.active { background: var(--red); color: white; border-color: var(--red); }
+
+  /* EVENT CARDS */
+  .event-card {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.15s;
+    cursor: pointer;
+  }
+  .event-card:hover { transform: translateY(-2px); }
+  .event-card-inner { display: flex; gap: 12px; padding: 14px; }
+  .event-img {
+    width: 70px; height: 70px; border-radius: 10px;
+    background: var(--red-light);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .event-body { flex: 1; min-width: 0; }
+  .event-tag {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+    color: var(--badge-text); background: var(--badge-bg);
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    margin-bottom: 4px; text-transform: uppercase;
+  }
+  .event-name { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+  .event-meta { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 4px; margin-bottom: 2px; }
+  .event-meta svg { width: 12px; height: 12px; flex-shrink: 0; }
+  .event-footer {
+    border-top: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .event-slots { font-size: 12px; color: var(--text2); font-weight: 600; }
+  .slots-bar { width: 80px; height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .slots-fill { height: 100%; background: var(--red); border-radius: 3px; }
+  .reg-btn {
+    background: var(--red); color: white; border: none;
+    padding: 6px 14px; border-radius: 20px; font-size: 12px;
+    font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: opacity 0.2s;
+  }
+  .reg-btn:hover { opacity: 0.85; }
+
+  /* UPCOMING BADGE */
+  .urgency-chip {
+    font-size: 11px; font-weight: 700; padding: 2px 10px;
+    border-radius: 20px; display: inline-block;
+  }
+  .chip-today { background: #FFF3E0; color: #E65100; }
+  .chip-tomorrow { background: #E8F5E9; color: #2E7D32; }
+  .chip-soon { background: var(--tag-bg); color: var(--tag-text); }
+  [data-theme="dark"] .chip-today { background: #3D2000; color: #FFB74D; }
+  [data-theme="dark"] .chip-tomorrow { background: #0A2E10; color: #81C784; }
+
+  /* HOSPITAL CARDS */
+  .hosp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    display: flex; gap: 12px;
+    cursor: pointer; transition: transform 0.15s;
+  }
+  .hosp-card:hover { transform: translateY(-2px); }
+  .hosp-icon {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: var(--red-light);
+    flex-shrink: 0; display: flex; align-items: center;
+    justify-content: center; font-size: 22px;
+  }
+  .hosp-body { flex: 1; }
+  .hosp-name { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+  .hosp-address { font-size: 12px; color: var(--text2); margin-bottom: 6px; line-height: 1.35; }
+  .hosp-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .dist-chip {
+    font-size: 11px; font-weight: 700; color: var(--red);
+    background: var(--red-light); padding: 2px 8px; border-radius: 12px;
+  }
+  .hours-chip {
+    font-size: 11px; color: var(--text3); font-weight: 600;
+  }
+  .hosp-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .map-btn {
+    flex: 1; padding: 7px; border-radius: 8px; font-size: 12px;
+    font-weight: 700; cursor: pointer; border: 1.5px solid var(--border);
+    background: var(--surface2); color: var(--text);
+    font-family: inherit; transition: background 0.2s;
+  }
+  .map-btn:hover { background: var(--border); }
+  .donate-btn {
+    flex: 1; padding: 7px; border-radius: 8px; font-size: 12px;
+    font-weight: 700; cursor: pointer; border: none;
+    background: var(--red); color: white;
+    font-family: inherit; transition: opacity 0.2s;
+  }
+  .donate-btn:hover { opacity: 0.85; }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: var(--nav-bg);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 8px 0 12px;
+    z-index: 100;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 3px; cursor: pointer; padding: 4px 0;
+  }
+  .nav-icon { font-size: 20px; color: var(--text3); transition: color 0.2s; }
+  .nav-item.active .nav-icon { color: var(--red); }
+  .nav-label { font-size: 10px; font-weight: 700; color: var(--text3); }
+  .nav-item.active .nav-label { color: var(--red); }
+  .center-btn {
+    width: 56px; height: 56px; background: var(--red);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin-top: -20px; box-shadow: 0 4px 16px rgba(211,47,47,0.45);
+    cursor: pointer; transition: transform 0.15s;
+    position: relative; flex-shrink: 0;
+  }
+  .center-btn:hover { transform: scale(1.08); }
+  .center-btn svg { width: 22px; height: 22px; fill: white; }
+
+  /* MODAL OVERLAY */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.55);
+    align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-sheet {
+    background: var(--surface);
+    width: 100%; max-width: 430px;
+    border-radius: 22px 22px 0 0;
+    max-height: 92vh;
+    overflow-y: auto;
+    animation: slideUp 0.32s cubic-bezier(.22,.68,0,1.2);
+    padding-bottom: 30px;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);   opacity: 1; }
+  }
+  .modal-handle {
+    width: 40px; height: 4px; background: var(--border);
+    border-radius: 2px; margin: 14px auto 0;
+  }
+  .modal-header {
+    padding: 16px 20px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .modal-title { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1.3; }
+  .modal-sub { font-size: 12px; color: var(--text3); margin-top: 2px; font-weight: 600; }
+  .close-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--surface2); border: none; cursor: pointer;
+    color: var(--text2); font-size: 18px; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .close-btn:hover { background: var(--border); }
+  .modal-event-pill {
+    margin: 12px 20px 0;
+    background: var(--red-light); border-radius: 10px;
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .pill-emoji { font-size: 22px; }
+  .pill-name { font-size: 13px; font-weight: 800; color: var(--red); line-height: 1.25; }
+  .pill-date { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 1px; }
+
+  /* FORM */
+  .form-body { padding: 16px 20px 0; }
+  .step-indicator {
+    display: flex; gap: 6px; margin-bottom: 18px; align-items: center;
+  }
+  .step-dot {
+    height: 4px; border-radius: 2px; flex: 1;
+    background: var(--surface2); transition: background 0.3s;
+  }
+  .step-dot.done { background: var(--red); }
+  .step-label { font-size: 11px; color: var(--text3); font-weight: 700; white-space: nowrap; }
+
+  .form-section-title {
+    font-size: 13px; font-weight: 800; color: var(--red);
+    letter-spacing: 0.4px; text-transform: uppercase;
+    margin: 18px 0 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .form-section-title:first-child { margin-top: 0; }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block; font-size: 12px; font-weight: 700;
+    color: var(--text2); margin-bottom: 5px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 11px 13px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 14px;
+    font-family: 'Nunito', sans-serif;
+    background: var(--surface2); color: var(--text);
+    outline: none; transition: border-color 0.2s, background 0.2s;
+    -webkit-appearance: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--red); background: var(--surface);
+  }
+  .field textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+
+  /* FILE UPLOAD */
+  .file-upload {
+    border: 2px dashed var(--border);
+    border-radius: 12px; padding: 18px;
+    text-align: center; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--surface2);
+  }
+  .file-upload:hover { border-color: var(--red); background: var(--red-light); }
+  .file-upload input { display: none; }
+  .file-upload-icon { font-size: 26px; margin-bottom: 6px; }
+  .file-upload-text { font-size: 13px; font-weight: 700; color: var(--text2); }
+  .file-upload-hint { font-size: 11px; color: var(--text3); margin-top: 3px; }
+  .file-name { font-size: 12px; color: var(--red); font-weight: 700; margin-top: 6px; }
+
+  /* CHECKBOXES */
+  .check-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 13px; border-radius: 10px;
+    border: 1.5px solid var(--border); margin-bottom: 8px;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s;
+    background: var(--surface2);
+  }
+  .check-item:hover { border-color: var(--red); }
+  .check-item.checked { border-color: var(--red); background: var(--red-light); }
+  .check-box {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 2px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; margin-top: 1px;
+  }
+  .check-item.checked .check-box { background: var(--red); border-color: var(--red); }
+  .check-tick { display: none; color: white; font-size: 12px; font-weight: 800; }
+  .check-item.checked .check-tick { display: block; }
+  .check-text { font-size: 13px; color: var(--text); line-height: 1.4; font-weight: 600; }
+  .check-text span { font-size: 11px; color: var(--text3); display: block; margin-top: 1px; font-weight: 600; }
+
+  /* SUBMIT */
+  .modal-footer {
+    padding: 16px 20px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+  .submit-btn {
+    width: 100%; padding: 14px;
+    background: var(--red); color: white;
+    border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .submit-btn:hover { opacity: 0.88; }
+  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .required-note { font-size: 11px; color: var(--text3); text-align: center; margin-top: 10px; font-weight: 600; }
+
+  /* SUCCESS */
+  .success-screen {
+    display: none; flex-direction: column;
+    align-items: center; text-align: center;
+    padding: 40px 24px 20px;
+  }
+  .success-screen.show { display: flex; }
+  .success-anim { font-size: 60px; margin-bottom: 16px; animation: pop 0.5s cubic-bezier(.22,.68,0,1.5); }
+  @keyframes pop { from { transform: scale(0.4); opacity:0; } to { transform: scale(1); opacity:1; } }
+  .success-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .success-sub { font-size: 14px; color: var(--text2); line-height: 1.5; margin-bottom: 20px; }
+  .success-id { font-size: 13px; font-weight: 700; color: var(--red); background: var(--red-light); padding: 6px 16px; border-radius: 20px; }
+  .done-btn {
+    margin-top: 20px; width: 100%; padding: 13px;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 12px; font-size: 15px; font-weight: 800;
+    color: var(--text); font-family: 'Nunito', sans-serif; cursor: pointer;
+  }
+
+  /* INFO STRIP */
+  .info-strip {
+    margin: 16px 16px 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 16px;
+    display: flex; gap: 0;
+  }
+  .info-item { flex: 1; text-align: center; }
+  .info-item + .info-item { border-left: 1px solid var(--border); }
+  .info-num { font-size: 20px; font-weight: 800; color: var(--red); }
+  .info-desc { font-size: 11px; color: var(--text2); font-weight: 600; margin-top: 2px; }
+</style>
+</head>
+<body data-theme="light">
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="top-nav-left" onclick="window.location.href='home.html'" style="cursor:pointer">
+    <div class="logo-dot">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8 8 5 11 5 15a7 7 0 0014 0c0-4-3-7-7-13z"/></svg>
+    </div>
+    <span class="brand-name">RaktaMitra</span>
+  </div>
+  <div class="top-nav-right">
+    <div class="toggle-wrap">
+      <span class="toggle-label" id="toggle-lbl">☀️</span>
+      <div class="toggle" id="theme-toggle" onclick="toggleTheme()">
+        <div class="toggle-knob"></div>
+      </div>
+    </div>
+    <button class="icon-btn" aria-label="Search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+    </button>
+    <button class="icon-btn" aria-label="Notifications">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="notif-badge">3</span>
+    </button>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-title">Donate Blood, Save Lives 🩸</div>
+    <div class="hero-sub">Find camps & hospitals near you in Kolkata. Every drop counts.</div>
+    <span class="hero-stat">📍 Kolkata, West Bengal</span>
+  </div>
+
+  <!-- STATS STRIP -->
+  <div class="info-strip">
+    <div class="info-item">
+      <div class="info-num">14</div>
+      <div class="info-desc">Active Camps</div>
+    </div>
+    <div class="info-item">
+      <div class="info-num">38</div>
+      <div class="info-desc">Hospitals</div>
+    </div>
+    <div class="info-item">
+      <div class="info-num">4.2k</div>
+      <div class="info-desc">Donors This Month</div>
+    </div>
+  </div>
+
+  <!-- UPCOMING EVENTS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">🗓 Upcoming Donation Camps</span>
+      <span class="view-all">View All</span>
+    </div>
+    <div class="filter-tabs">
+      <div class="tab active" onclick="filterTab(this,'all')">All</div>
+      <div class="tab" onclick="filterTab(this,'today')">Today</div>
+      <div class="tab" onclick="filterTab(this,'week')">This Week</div>
+      <div class="tab" onclick="filterTab(this,'camp')">Donation Camps</div>
+      <div class="tab" onclick="filterTab(this,'emergency')">Emergency</div>
+    </div>
+    <div id="events-list"></div>
+  </div>
+
+  <!-- NEARBY HOSPITALS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">🏥 Nearest Hospitals</span>
+      <span class="view-all">View All</span>
+    </div>
+    <div id="hospitals-list"></div>
+  </div>
+
+</div>
+
+<!-- REGISTRATION MODAL -->
+<div class="modal-overlay" id="reg-modal" onclick="closeModalOutside(event)">
+  <div class="modal-sheet" id="modal-sheet">
+    <div class="modal-handle"></div>
+
+    <!-- FORM VIEW -->
+    <div id="form-view">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Donor Registration</div>
+          <div class="modal-sub">Complete all fields to confirm your slot</div>
+        </div>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </div>
+
+      <div class="modal-event-pill" id="modal-event-pill">
+        <div class="pill-emoji" id="modal-emoji">🏟</div>
+        <div>
+          <div class="pill-name" id="modal-evname">Event Name</div>
+          <div class="pill-date" id="modal-evdate">Date</div>
+        </div>
+      </div>
+
+      <div class="form-body">
+        <div class="step-indicator">
+          <div class="step-dot done" id="sd1"></div>
+          <div class="step-dot" id="sd2"></div>
+          <div class="step-dot" id="sd3"></div>
+          <span class="step-label" id="step-lbl">Step 1 of 3</span>
+        </div>
+
+        <!-- STEP 1: Personal Info -->
+        <div id="step1">
+          <div class="form-section-title">👤 Personal Information</div>
+          <div class="field-row">
+            <div class="field">
+              <label>First Name *</label>
+              <input type="text" id="fname" placeholder="Nandini" />
+            </div>
+            <div class="field">
+              <label>Last Name *</label>
+              <input type="text" id="lname" placeholder="Das" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Date of Birth *</label>
+            <input type="date" id="dob" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Blood Group *</label>
+              <select id="blood">
+                <option value="">Select</option>
+                <option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option>
+                <option>O+</option><option>O-</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Gender *</label>
+              <select id="gender">
+                <option value="">Select</option>
+                <option>Male</option><option>Female</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section-title">📞 Contact Details</div>
+          <div class="field">
+            <label>Mobile Number *</label>
+            <input type="tel" id="phone" placeholder="+91 98765 43210" maxlength="13" />
+          </div>
+          <div class="field">
+            <label>Emergency Contact Number *</label>
+            <input type="tel" id="ephone" placeholder="+91 98765 00000" maxlength="13" />
+          </div>
+          <div class="field">
+            <label>Gmail Address *</label>
+            <input type="email" id="email" placeholder="nandini@gmail.com" />
+          </div>
+          <div class="field">
+            <label>Residential Address *</label>
+            <textarea id="address" placeholder="House no., Street, Area, Kolkata – PIN"></textarea>
+          </div>
+
+          <button class="submit-btn" onclick="goStep(2)" style="margin-top:6px">
+            Next — Medical Info →
+          </button>
+        </div>
+
+        <!-- STEP 2: Medical -->
+        <div id="step2" style="display:none">
+          <div class="form-section-title">🩺 Medical Information</div>
+          <div class="field-row">
+            <div class="field">
+              <label>Weight (kg) *</label>
+              <input type="number" id="weight" placeholder="e.g. 60" min="45" />
+            </div>
+            <div class="field">
+              <label>Height (cm)</label>
+              <input type="number" id="height" placeholder="e.g. 165" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Last Donation Date (if any)</label>
+            <input type="date" id="lastdon" />
+          </div>
+          <div class="field">
+            <label>Any Known Allergies or Medical Conditions</label>
+            <textarea id="conditions" placeholder="e.g. Diabetes, Hypertension, None"></textarea>
+          </div>
+          <div class="field">
+            <label>Current Medications (if any)</label>
+            <input type="text" id="meds" placeholder="e.g. None / Metformin 500mg" />
+          </div>
+
+          <div class="form-section-title">📎 Upload Medical Report</div>
+          <label class="file-upload" id="file-label" onclick="document.getElementById('med-file').click()">
+            <input type="file" id="med-file" accept=".pdf,.jpg,.jpeg,.png" onchange="showFile(this)" />
+            <div class="file-upload-icon">📄</div>
+            <div class="file-upload-text">Tap to upload medical report</div>
+            <div class="file-upload-hint">PDF, JPG or PNG • Max 5MB (optional)</div>
+            <div class="file-name" id="file-name-display" style="display:none"></div>
+          </label>
+
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="submit-btn" onclick="goStep(1)" style="background:var(--surface2);color:var(--text);flex:0.5;font-size:14px">← Back</button>
+            <button class="submit-btn" onclick="goStep(3)">Next — Regulations →</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Eligibility Checkboxes -->
+        <div id="step3" style="display:none">
+          <div class="form-section-title">✅ Eligibility & Regulations</div>
+          <p style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5;font-weight:600;">Please confirm all statements below. These are mandatory as per Indian blood donation guidelines (National Blood Transfusion Council).</p>
+
+          <div id="checks-container"></div>
+
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button class="submit-btn" onclick="goStep(2)" style="background:var(--surface2);color:var(--text);flex:0.5;font-size:14px">← Back</button>
+            <button class="submit-btn" id="final-submit" onclick="submitForm()" disabled>
+              🩸 Confirm Registration
+            </button>
+          </div>
+          <div class="required-note">All checkboxes must be ticked to proceed</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SUCCESS VIEW -->
+    <div class="success-screen" id="success-view">
+      <div class="success-anim">🎉</div>
+      <div class="success-title">You're Registered!</div>
+      <div class="success-sub">Thank you for stepping up to donate blood. Your slot has been confirmed. We'll send details to your email & phone.</div>
+      <div class="success-id" id="booking-id">Booking ID: #RM00000</div>
+      <button class="done-btn" onclick="closeModal()">Done ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='home.html'">
+    <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span class="nav-label">Home</span>
+  </div>
+  <div class="nav-item active" onclick="window.location.href='events.html'">
+    <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span class="nav-label">Events</span>
+  </div>
+  <div class="nav-item" style="flex:0.7" onclick="window.location.href='donate.html'">
+    <div class="center-btn">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8 8 5 11 5 15a7 7 0 0014 0c0-4-3-7-7-13z"/></svg>
+    </div>
+  </div>
+  <div class="nav-item" onclick="window.location.href='requests.html'">
+    <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span class="nav-label">Requests</span>
+  </div>
+  <div class="nav-item" onclick="window.location.href='profile.html'">
+    <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span class="nav-label">Profile</span>
+  </div>
+</nav>
+
+<script>
+const events = [
+  { emoji: '🏟', tag: 'BLOOD DONATION CAMP', name: 'Mega City Blood Donation Drive', loc: 'Eco Park, New Town, Kolkata', date: 'Today, 17 May • 10:00 AM – 4:00 PM', slots: 85, total: 100, urgency: 'today', type: 'camp' },
+  { emoji: '🚨', tag: 'EMERGENCY DRIVE', name: 'Emergency Blood Drive – B+ & O+ Needed', loc: 'SSKM Hospital, AJC Bose Road', date: 'Today, 17 May • Ongoing', slots: 30, total: 40, urgency: 'today', type: 'emergency' },
+  { emoji: '🏫', tag: 'DONATION CAMP', name: 'Jadavpur University Annual Blood Camp', loc: 'Jadavpur Campus, Raja S.C. Mullick Rd', date: 'Tomorrow, 18 May • 9:00 AM – 3:00 PM', slots: 60, total: 120, urgency: 'tomorrow', type: 'camp' },
+  { emoji: '🏢', tag: 'CORPORATE CAMP', name: 'TCS & Red Cross Donation Camp', loc: 'Sector V, Salt Lake, Kolkata', date: '20 May • 11:00 AM – 5:00 PM', slots: 45, total: 80, urgency: 'soon', type: 'camp' },
+  { emoji: '🕌', tag: 'COMMUNITY CAMP', name: 'Durga Puja Committee Blood Camp', loc: 'Dum Dum Park, North Kolkata', date: '22 May • 8:00 AM – 2:00 PM', slots: 70, total: 100, urgency: 'soon', type: 'camp' },
+];
+
+const hospitals = [
+  { emoji: '🏥', name: 'SSKM (PG Hospital)', address: 'AJC Bose Road, Bhowanipore, Kolkata – 700020', dist: '2.3 km', hours: 'Blood Bank: 24/7' },
+  { emoji: '🏨', name: 'Apollo Gleneagles Hospital', address: '58, Canal Circular Rd, Kadapara, Phool Bagan', dist: '4.1 km', hours: 'Blood Bank: 8AM – 8PM' },
+  { emoji: '🏛', name: 'Calcutta Medical College', address: '88, College St, College Square, Kolkata – 700073', dist: '5.0 km', hours: 'Blood Bank: 9AM – 5PM' },
+  { emoji: '🏗', name: 'Ruby General Hospital', address: 'E.M. Bypass, Kasba, Kolkata – 700107', dist: '6.2 km', hours: 'Blood Bank: 7AM – 9PM' },
+  { emoji: '🏬', name: 'Fortis Hospital Anandapur', address: 'JC 16/3, Sector III, Salt Lake City', dist: '7.5 km', hours: 'Blood Bank: 8AM – 6PM' },
+];
+
+const regulations = [
+  { id:'c1', text:'I am between 18 and 65 years of age.', sub:'Minimum age: 18 years | Maximum: 65 years (NBTC guideline)' },
+  { id:'c2', text:'My body weight is at least 45 kg.', sub:'Minimum weight requirement for safe donation' },
+  { id:'c3', text:'I have not donated blood in the last 3 months (90 days).', sub:'Mandatory gap between whole blood donations' },
+  { id:'c4', text:'I do not have fever, cold or any active infection today.', sub:'Temperature must be below 37.5°C on donation day' },
+  { id:'c5', text:'I have not taken aspirin or antibiotics in the last 48 hours.', sub:'Certain medications affect blood quality' },
+  { id:'c6', text:'I have not had a tattoo or piercing in the last 6 months.', sub:'Risk of bloodborne infection transmission' },
+  { id:'c7', text:'I have not consumed alcohol in the last 24 hours.', sub:'Alcohol affects blood composition temporarily' },
+  { id:'c8', text:'I am not pregnant, breastfeeding, or have delivered a baby in the past 6 months.', sub:'Applies to female donors only; skip if not applicable' },
+  { id:'c9', text:'I confirm all information provided is true and correct.', sub:'False information may disqualify future donations' },
+  { id:'c10', text:'I voluntarily consent to donate blood and understand the process.', sub:'Informed consent as per Indian blood donation norms' },
+];
+
+let checkedSet = new Set();
+let currentEvent = null;
+
+function renderEvents(filter) {
+  const list = document.getElementById('events-list');
+  const filtered = filter === 'all' ? events : events.filter(e => e.type === filter || e.urgency === filter);
+  list.innerHTML = filtered.map((ev, idx) => {
+    const pct = Math.round((ev.slots / ev.total) * 100);
+    const chipClass = ev.urgency === 'today' ? 'chip-today' : ev.urgency === 'tomorrow' ? 'chip-tomorrow' : 'chip-soon';
+    const chipLabel = ev.urgency === 'today' ? '🔴 Today' : ev.urgency === 'tomorrow' ? '🟢 Tomorrow' : '📅 Upcoming';
+    const evIdx = events.indexOf(ev);
+    return `<div class="event-card">
+      <div class="event-card-inner">
+        <div class="event-img">${ev.emoji}</div>
+        <div class="event-body">
+          <span class="event-tag">${ev.tag}</span>
+          <div class="event-name">${ev.name}</div>
+          <div class="event-meta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            ${ev.loc}
+          </div>
+          <div class="event-meta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ${ev.date}
+          </div>
+        </div>
+      </div>
+      <div class="event-footer">
+        <div>
+          <div class="event-slots">${ev.slots}/${ev.total} slots left</div>
+          <div class="slots-bar" style="margin-top:4px"><div class="slots-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+          <span class="urgency-chip ${chipClass}">${chipLabel}</span>
+          <button class="reg-btn" onclick="openModal(${evIdx})">Register</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderHospitals() {
+  const list = document.getElementById('hospitals-list');
+  list.innerHTML = hospitals.map(h => `
+    <div class="hosp-card">
+      <div class="hosp-icon">${h.emoji}</div>
+      <div class="hosp-body">
+        <div class="hosp-name">${h.name}</div>
+        <div class="hosp-address">${h.address}</div>
+        <div class="hosp-row">
+          <span class="dist-chip">📍 ${h.dist}</span>
+          <span class="hours-chip">⏰ ${h.hours}</span>
+        </div>
+        <div class="hosp-actions">
+          <button class="map-btn">🗺 Directions</button>
+          <button class="donate-btn">Donate Here</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderChecks() {
+  const c = document.getElementById('checks-container');
+  c.innerHTML = regulations.map(r => `
+    <div class="check-item${checkedSet.has(r.id) ? ' checked' : ''}" id="ci-${r.id}" onclick="toggleCheck('${r.id}')">
+      <div class="check-box"><span class="check-tick">✓</span></div>
+      <div class="check-text">${r.text}<span>${r.sub}</span></div>
+    </div>`).join('');
+}
+
+function toggleCheck(id) {
+  if (checkedSet.has(id)) checkedSet.delete(id);
+  else checkedSet.add(id);
+  const el = document.getElementById('ci-' + id);
+  el.classList.toggle('checked', checkedSet.has(id));
+  document.getElementById('final-submit').disabled = checkedSet.size < regulations.length;
+}
+
+function openModal(evIdx) {
+  currentEvent = events[evIdx];
+  document.getElementById('modal-emoji').textContent = currentEvent.emoji;
+  document.getElementById('modal-evname').textContent = currentEvent.name;
+  document.getElementById('modal-evdate').textContent = currentEvent.date + ' • ' + currentEvent.loc;
+  checkedSet.clear();
+  renderChecks();
+  goStep(1, true);
+  document.getElementById('form-view').style.display = '';
+  document.getElementById('success-view').classList.remove('show');
+  document.getElementById('reg-modal').classList.add('open');
+  document.getElementById('modal-sheet').scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('reg-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('reg-modal')) closeModal();
+}
+
+function goStep(n, silent) {
+  [1,2,3].forEach(i => document.getElementById('step'+i).style.display = i===n ? '' : 'none');
+  ['sd1','sd2','sd3'].forEach((id,i) => {
+    document.getElementById(id).classList.toggle('done', i < n);
+  });
+  document.getElementById('step-lbl').textContent = 'Step ' + n + ' of 3';
+  if (!silent) document.getElementById('modal-sheet').scrollTop = 0;
+  if (n === 3) renderChecks();
+}
+
+function showFile(input) {
+  const display = document.getElementById('file-name-display');
+  if (input.files && input.files[0]) {
+    display.textContent = '📎 ' + input.files[0].name;
+    display.style.display = 'block';
+  }
+}
+
+function submitForm() {
+  document.getElementById('form-view').style.display = 'none';
+  const sv = document.getElementById('success-view');
+  sv.classList.add('show');
+  const id = 'RM' + Math.floor(10000 + Math.random() * 90000);
+  document.getElementById('booking-id').textContent = 'Booking ID: #' + id;
+  document.getElementById('modal-sheet').scrollTop = 0;
+}
+
+function filterTab(el, filter) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderEvents(filter);
+}
+
+function toggleTheme() {
+  const body = document.body;
+  const toggle = document.getElementById('theme-toggle');
+  const lbl = document.getElementById('toggle-lbl');
+  if (body.dataset.theme === 'light') {
+    body.dataset.theme = 'dark';
+    toggle.classList.add('on');
+    lbl.textContent = '🌙';
+  } else {
+    body.dataset.theme = 'light';
+    toggle.classList.remove('on');
+    lbl.textContent = '☀️';
+  }
+}
+
+function navClick(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+renderEvents('all');
+renderHospitals();
+</script>
+</body>
+</html>
